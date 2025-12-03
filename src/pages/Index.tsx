@@ -65,6 +65,13 @@ const Index = () => {
               >
                 <Link to="/login">Log in</Link>
               </Button>
+              <Button
+                variant="outline"
+                className="px-6 h-10 rounded-lg font-semibold border-border"
+                asChild
+              >
+                <Link to="/register">Register</Link>
+              </Button>
             </div>
           </div>
         </div>
