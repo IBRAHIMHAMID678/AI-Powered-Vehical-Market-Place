@@ -93,12 +93,22 @@ const Login = () => {
               </label>
             </div>
 
-            <Button
-              type="submit"
-              className="w-full h-12 rounded-lg text-base font-semibold"
-            >
-              Sign in
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                type="submit"
+                className="flex-1 h-12 rounded-lg text-base font-semibold"
+              >
+                Sign in
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1 h-12 rounded-lg text-base font-semibold"
+                onClick={() => window.location.href = '/register'}
+              >
+                Register
+              </Button>
+            </div>
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
