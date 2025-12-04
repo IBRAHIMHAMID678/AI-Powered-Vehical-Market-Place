@@ -1,7 +1,0 @@
-project_id = "xidxxwymvajllxrtvnmu"
-
-[functions.auth-register]
-verify_jwt = false
-
-[functions.auth-login]
-verify_jwt = false

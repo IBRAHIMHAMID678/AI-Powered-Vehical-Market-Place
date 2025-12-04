@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import carImage from "@/assets/car-silver.png";
+
+// TODO: Add your MongoDB connection here
+// import { connectToMongoDB } from "@/lib/mongodb";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -22,12 +24,16 @@ const Login = () => {
     
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('auth-login', {
-        body: { email, password }
-      });
+      // TODO: Connect to MongoDB and verify credentials
+      // Example:
+      // const user = await db.collection('users').findOne({ email });
+      // if (!user || !await verifyPassword(password, user.password)) {
+      //   throw new Error('Invalid credentials');
+      // }
+      // Store user session/token as needed
 
-      if (error) throw error;
-
+      console.log("Login attempt:", { email, password });
+      
       toast({
         title: "Success",
         description: "Login successful!",
