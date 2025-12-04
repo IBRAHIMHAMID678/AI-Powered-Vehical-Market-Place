@@ -4,8 +4,10 @@ import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import carImage from "@/assets/car-silver.png";
+
+// TODO: Add your MongoDB connection here
+// import { connectToMongoDB } from "@/lib/mongodb";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,11 +34,16 @@ const Register = () => {
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('auth-register', {
-        body: { name, email, password }
-      });
+      // TODO: Connect to MongoDB and create user
+      // Example:
+      // const existingUser = await db.collection('users').findOne({ email });
+      // if (existingUser) {
+      //   throw new Error('User already exists');
+      // }
+      // const hashedPassword = await hashPassword(password);
+      // await db.collection('users').insertOne({ name, email, password: hashedPassword });
 
-      if (error) throw error;
+      console.log("Register attempt:", { name, email, password });
 
       toast({
         title: "Success",
