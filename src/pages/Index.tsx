@@ -1,198 +1,123 @@
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import Header from "@/components/Header";
+import SearchBar from "@/components/SearchBar";
+import CategoryCard from "@/components/CategoryCard";
 import suvIcon from "@/assets/suv-icon.png";
 import sedanIcon from "@/assets/sedan-icon.png";
 import truckIcon from "@/assets/truck-icon.png";
 
 const Index = () => {
+  const categories = [
+    {
+      title: "SUVs",
+      subtitle: "Off-roading & Adventure",
+      listingCount: "2,450+",
+      image: suvIcon,
+    },
+    {
+      title: "Sedans",
+      subtitle: "Comfort & Daily Use",
+      listingCount: "3,120+",
+      image: sedanIcon,
+    },
+    {
+      title: "Trucks",
+      subtitle: "Towing & Transport",
+      listingCount: "1,890+",
+      image: truckIcon,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center">
-              <div className="flex items-center space-x-2">
-                <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-sm">A</span>
-                </div>
-                <div>
-                  <p className="font-bold text-foreground text-sm">AUTOMOTIVE</p>
-                  <p className="text-[10px] text-muted-foreground tracking-wide">
-                    AI VEHICLE MARKETPLACE
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link
-                to="/"
-                className="text-foreground font-medium hover:text-primary transition-colors"
-              >
-                Home
-              </Link>
-              <Link
-                to="/auctions"
-                className="text-foreground font-medium hover:text-primary transition-colors"
-              >
-                Auctions
-              </Link>
-              <Link
-                to="/buy-now"
-                className="text-foreground font-medium hover:text-primary transition-colors"
-              >
-                Buy Now
-              </Link>
-            </nav>
-
-            {/* Auth Buttons */}
-            <div className="flex items-center space-x-3">
-              <Button className="px-6 h-10 rounded-lg font-semibold">Search</Button>
-              <Button
-                variant="outline"
-                className="px-6 h-10 rounded-lg font-semibold border-primary text-primary-foreground bg-primary hover:bg-primary/90"
-                asChild
-              >
-                <Link to="/login">Log in</Link>
-              </Button>
-              <Button
-                variant="outline"
-                className="px-6 h-10 rounded-lg font-semibold border-border"
-                asChild
-              >
-                <Link to="/register">Register</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         {/* Hero Section */}
-        <section className="mb-12">
-          <h1 className="text-4xl lg:text-5xl font-bold text-foreground leading-tight mb-8">
-            Find Your Perfect<br />Vehicle
-          </h1>
-
-          {/* Search Filters */}
-          <div className="bg-card rounded-xl p-4 shadow-sm flex flex-wrap items-center gap-4">
-            <Select>
-              <SelectTrigger className="w-[180px] h-12 border-border">
-                <SelectValue placeholder="All Categories" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="suv">SUVs</SelectItem>
-                <SelectItem value="sedan">Sedans</SelectItem>
-                <SelectItem value="truck">Trucks</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select>
-              <SelectTrigger className="w-[180px] h-12 border-border">
-                <SelectValue placeholder="Any Make" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="any">Any Make</SelectItem>
-                <SelectItem value="toyota">Toyota</SelectItem>
-                <SelectItem value="honda">Honda</SelectItem>
-                <SelectItem value="ford">Ford</SelectItem>
-                <SelectItem value="vw">Volkswagen</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select>
-              <SelectTrigger className="w-[180px] h-12 border-border">
-                <SelectValue placeholder="Any Model" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="any">Any Model</SelectItem>
-                <SelectItem value="camry">Camry</SelectItem>
-                <SelectItem value="accord">Accord</SelectItem>
-                <SelectItem value="f150">F-150</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select>
-              <SelectTrigger className="w-[180px] h-12 border-border">
-                <SelectValue placeholder="Price" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="any">Any Price</SelectItem>
-                <SelectItem value="0-10000">$0 - $10,000</SelectItem>
-                <SelectItem value="10000-25000">$10,000 - $25,000</SelectItem>
-                <SelectItem value="25000-50000">$25,000 - $50,000</SelectItem>
-                <SelectItem value="50000+">$50,000+</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Button className="h-12 px-8 rounded-lg font-semibold ml-auto">
-              Search
-            </Button>
+        <section className="mb-12 lg:mb-16 animate-fade-in">
+          <div className="max-w-3xl">
+            <p className="text-primary font-semibold tracking-wide text-sm mb-4 uppercase">
+              AI-Powered Vehicle Marketplace
+            </p>
+            <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6">
+              Find Your Perfect{" "}
+              <span className="text-gradient">Vehicle</span>
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-xl">
+              Discover thousands of vehicles with intelligent AI assistance. Buy, sell, or bid with confidence.
+            </p>
           </div>
+        </section>
+
+        {/* Search Filters */}
+        <section className="mb-16 lg:mb-20">
+          <SearchBar />
         </section>
 
         {/* Categories Section */}
         <section>
-          <h2 className="text-2xl font-bold text-foreground mb-6 underline underline-offset-4 decoration-2">
-            Categories
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* SUVs Card */}
-            <div className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-foreground mb-1">SUVs</h3>
-                  <p className="text-sm text-muted-foreground">Off-roading</p>
-                </div>
-                <img
-                  src={suvIcon}
-                  alt="SUV"
-                  className="w-24 h-16 object-contain opacity-60"
-                />
-              </div>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground">
+                Browse Categories
+              </h2>
+              <p className="text-muted-foreground mt-1">
+                Explore our curated vehicle categories
+              </p>
             </div>
-
-            {/* Sedans Card */}
-            <div className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-foreground mb-1">Sedans</h3>
-                  <p className="text-sm text-muted-foreground">Comfort & Daily Use</p>
-                </div>
-                <img
-                  src={sedanIcon}
-                  alt="Sedan"
-                  className="w-24 h-16 object-contain opacity-60"
+            <a
+              href="#"
+              className="hidden sm:flex items-center text-primary font-medium hover:underline"
+            >
+              View All Categories
+              <svg
+                className="w-4 h-4 ml-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
                 />
-              </div>
+              </svg>
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {categories.map((category, index) => (
+              <CategoryCard
+                key={category.title}
+                title={category.title}
+                subtitle={category.subtitle}
+                listingCount={category.listingCount}
+                image={category.image}
+                delay={index * 100}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Stats Section */}
+        <section className="mt-20 py-12 border-t border-border">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="text-center animate-fade-in" style={{ animationDelay: "0ms" }}>
+              <p className="font-heading text-3xl md:text-4xl font-bold text-primary">15K+</p>
+              <p className="text-sm text-muted-foreground mt-1">Active Listings</p>
             </div>
-
-            {/* Trucks Card */}
-            <div className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-foreground mb-1">Trucks</h3>
-                  <p className="text-sm text-muted-foreground">Towing & Transport</p>
-                </div>
-                <img
-                  src={truckIcon}
-                  alt="Truck"
-                  className="w-24 h-16 object-contain opacity-60"
-                />
-              </div>
+            <div className="text-center animate-fade-in" style={{ animationDelay: "100ms" }}>
+              <p className="font-heading text-3xl md:text-4xl font-bold text-primary">8K+</p>
+              <p className="text-sm text-muted-foreground mt-1">Happy Customers</p>
+            </div>
+            <div className="text-center animate-fade-in" style={{ animationDelay: "200ms" }}>
+              <p className="font-heading text-3xl md:text-4xl font-bold text-primary">500+</p>
+              <p className="text-sm text-muted-foreground mt-1">Verified Dealers</p>
+            </div>
+            <div className="text-center animate-fade-in" style={{ animationDelay: "300ms" }}>
+              <p className="font-heading text-3xl md:text-4xl font-bold text-primary">98%</p>
+              <p className="text-sm text-muted-foreground mt-1">Satisfaction Rate</p>
             </div>
           </div>
         </section>
