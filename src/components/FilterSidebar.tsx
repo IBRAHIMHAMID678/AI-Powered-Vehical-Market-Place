@@ -15,9 +15,8 @@ const FilterSidebar = ({ isOpen = true, onClose }: FilterSidebarProps) => {
 
   return (
     <div
-      className={`bg-card rounded-2xl border border-border/50 p-6 shadow-premium ${
-        isOpen ? "block" : "hidden lg:block"
-      }`}
+      className={`bg-card rounded-2xl border border-border/50 p-6 shadow-premium ${isOpen ? "block" : "hidden lg:block"
+        }`}
     >
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
@@ -36,8 +35,8 @@ const FilterSidebar = ({ isOpen = true, onClose }: FilterSidebarProps) => {
         <h4 className="font-semibold text-foreground mb-4">Price Range</h4>
         <Slider defaultValue={[10000, 50000]} max={100000} step={1000} className="mb-3" />
         <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>$10,000</span>
-          <span>$50,000</span>
+          <span>PKR 10,000</span>
+          <span>PKR 50,000</span>
         </div>
       </div>
 

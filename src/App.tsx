@@ -11,6 +11,7 @@ import Auctions from "./pages/Auctions";
 import CreateListing from "./pages/CreateListing";
 import Inventory from "./pages/Inventory";
 import NotFound from "./pages/NotFound";
+import { ChatBot } from "@/components/ChatBot";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <ChatBot />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />

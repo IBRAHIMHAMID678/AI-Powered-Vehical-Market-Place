@@ -12,73 +12,90 @@ import {
 } from "@/components/ui/select";
 import { Search, Grid3X3, List, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 const BuyNow = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [searchParams] = useSearchParams();
 
-  const vehicles = [
+  const selectedMake = searchParams.get("make");
+  const selectedPrice = searchParams.get("price");
+
+  const allVehicles = [
     {
       id: "1",
-      title: "2023 Toyota Camry XSE",
-      price: 32500,
-      image: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=600",
+      title: "2023 Toyota Corolla Altis Grande X",
+      price: 9550000,
+      image: "https://images.unsplash.com/photo-1623869675785-5ee45f061266?w=600",
       year: 2023,
-      mileage: "12,500 mi",
-      fuelType: "Hybrid",
-      location: "Los Angeles, CA",
+      mileage: "12,500 km",
+      fuelType: "Petrol",
+      location: "Lahore, Punjab",
+      make: "toyota"
     },
     {
       id: "2",
-      title: "2022 BMW X5 xDrive40i",
-      price: 58900,
-      image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600",
+      title: "2022 Honda Civic RS Turbo",
+      price: 10850000,
+      image: "https://images.unsplash.com/photo-1605816260655-66795f553316?w=600",
       year: 2022,
-      mileage: "28,000 mi",
-      fuelType: "Gasoline",
-      location: "Miami, FL",
+      mileage: "24,000 km",
+      fuelType: "Petrol",
+      location: "Islamabad, ICT",
+      make: "honda"
     },
     {
       id: "3",
-      title: "2024 Tesla Model 3",
-      price: 42000,
-      image: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=600",
+      title: "2024 Suzuki Alto VXL",
+      price: 3250000,
+      image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600",
       year: 2024,
-      mileage: "5,200 mi",
-      fuelType: "Electric",
-      location: "San Francisco, CA",
+      mileage: "1,200 km",
+      fuelType: "Petrol",
+      location: "Karachi, Sindh",
+      make: "suzuki"
     },
     {
       id: "4",
-      title: "2023 Mercedes-Benz C300",
-      price: 47500,
-      image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=600",
+      title: "2023 Kia Sportage AWD",
+      price: 9800000,
+      image: "https://images.unsplash.com/photo-1541804791-626a42207908?w=600",
       year: 2023,
-      mileage: "18,900 mi",
-      fuelType: "Gasoline",
-      location: "New York, NY",
+      mileage: "18,900 km",
+      fuelType: "Petrol",
+      location: "Faisalabad, Punjab",
+      make: "kia"
     },
     {
       id: "5",
-      title: "2022 Audi Q7 Premium",
-      price: 54200,
-      image: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=600",
+      title: "2022 Hyundai Tucson GLS",
+      price: 9200000,
+      image: "https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=600",
       year: 2022,
-      mileage: "32,400 mi",
-      fuelType: "Diesel",
-      location: "Chicago, IL",
+      mileage: "32,400 km",
+      fuelType: "Petrol",
+      location: "Multan, Punjab",
+      make: "hyundai"
     },
     {
       id: "6",
-      title: "2023 Ford Mustang GT",
-      price: 45800,
-      image: "https://images.unsplash.com/photo-1584345604476-8ec5f82d661f?w=600",
+      title: "2023 Changan Alsvin Lumiere",
+      price: 4950000,
+      image: "https://images.unsplash.com/photo-1628886365457-36c5333f2cf1?w=600",
       year: 2023,
-      mileage: "8,700 mi",
-      fuelType: "Gasoline",
-      location: "Dallas, TX",
+      mileage: "8,700 km",
+      fuelType: "Petrol",
+      location: "Rawalpindi, Punjab",
+      make: "changan"
     },
   ];
+
+  const vehicles = allVehicles.filter(v => {
+    if (selectedMake && selectedMake !== "any" && v.make !== selectedMake) return false;
+    // Simple price logic for demo
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -93,6 +110,11 @@ const BuyNow = () => {
           <p className="text-muted-foreground">
             Browse our curated selection of premium vehicles available for immediate purchase
           </p>
+          {selectedMake && selectedMake !== "any" && (
+            <div className="mt-4 inline-flex items-center bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
+              Filtered by: <span className="uppercase ml-1 font-bold">{selectedMake}</span>
+            </div>
+          )}
         </div>
 
         {/* Search & Controls Bar */}
@@ -125,21 +147,19 @@ const BuyNow = () => {
             <div className="flex items-center gap-2 bg-muted rounded-xl p-1">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2.5 rounded-lg transition-all ${
-                  viewMode === "grid"
-                    ? "bg-primary text-primary-foreground shadow-premium"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                className={`p-2.5 rounded-lg transition-all ${viewMode === "grid"
+                  ? "bg-primary text-primary-foreground shadow-premium"
+                  : "text-muted-foreground hover:text-foreground"
+                  }`}
               >
                 <Grid3X3 className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2.5 rounded-lg transition-all ${
-                  viewMode === "list"
-                    ? "bg-primary text-primary-foreground shadow-premium"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                className={`p-2.5 rounded-lg transition-all ${viewMode === "list"
+                  ? "bg-primary text-primary-foreground shadow-premium"
+                  : "text-muted-foreground hover:text-foreground"
+                  }`}
               >
                 <List className="w-5 h-5" />
               </button>
@@ -189,11 +209,10 @@ const BuyNow = () => {
             </div>
 
             <div
-              className={`grid gap-6 ${
-                viewMode === "grid"
-                  ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
-                  : "grid-cols-1"
-              }`}
+              className={`grid gap-6 ${viewMode === "grid"
+                ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+                : "grid-cols-1"
+                }`}
             >
               {vehicles.map((vehicle, index) => (
                 <VehicleCard key={vehicle.id} {...vehicle} delay={index * 100} />

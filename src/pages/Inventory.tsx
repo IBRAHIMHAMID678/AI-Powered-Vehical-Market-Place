@@ -31,7 +31,7 @@ import {
   Edit,
   Trash2,
   Car,
-  DollarSign,
+  Banknote,
   TrendingUp,
   Package,
   ArrowUpRight,
@@ -59,10 +59,10 @@ const Inventory = () => {
     },
     {
       label: "Total Value",
-      value: "$842,500",
+      value: "PKR 842,500",
       change: "+12%",
       isPositive: true,
-      icon: DollarSign,
+      icon: Banknote,
       color: "bg-green-500/10 text-green-600",
     },
     {
@@ -189,9 +189,8 @@ const Inventory = () => {
                   <stat.icon className="w-5 h-5" />
                 </div>
                 <div
-                  className={`flex items-center gap-1 text-sm font-medium ${
-                    stat.isPositive ? "text-green-600" : "text-accent-racing"
-                  }`}
+                  className={`flex items-center gap-1 text-sm font-medium ${stat.isPositive ? "text-green-600" : "text-accent-racing"
+                    }`}
                 >
                   {stat.isPositive ? (
                     <ArrowUpRight className="w-4 h-4" />
@@ -285,11 +284,11 @@ const Inventory = () => {
                   <TableCell>
                     <div>
                       <p className="font-heading font-bold text-foreground">
-                        ${listing.currentBid?.toLocaleString() || listing.price.toLocaleString()}
+                        PKR {listing.currentBid?.toLocaleString() || listing.price.toLocaleString()}
                       </p>
                       {listing.currentBid && (
                         <p className="text-xs text-muted-foreground">
-                          Ask: ${listing.price.toLocaleString()}
+                          Ask: PKR {listing.price.toLocaleString()}
                         </p>
                       )}
                     </div>

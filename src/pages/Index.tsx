@@ -34,18 +34,45 @@ const Index = () => {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         {/* Hero Section */}
-        <section className="mb-12 lg:mb-16 animate-fade-in">
-          <div className="max-w-3xl">
-            <p className="text-primary font-semibold tracking-wide text-sm mb-4 uppercase">
+        {/* Hero Section */}
+        <section className="relative mb-12 lg:mb-16 animate-fade-in rounded-3xl overflow-hidden shadow-2xl">
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <img
+              src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1920&auto=format&fit=crop"
+              alt="Luxury Car Background"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-transparent" />
+          </div>
+
+          <div className="relative z-10 max-w-3xl py-20 px-8 md:px-12">
+            <div className="inline-flex items-center gap-2 bg-primary/10 backdrop-blur-md border border-primary/20 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-6 animate-fade-in-up">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              </span>
               AI-Powered Vehicle Marketplace
-            </p>
-            <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6">
-              Find Your Perfect{" "}
-              <span className="text-gradient">Vehicle</span>
+            </div>
+
+            <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: "100ms" }}>
+              Find Your Perfect <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-racing">Dream Ride</span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-xl">
-              Discover thousands of vehicles with intelligent AI assistance. Buy, sell, or bid with confidence.
+
+            <p className="text-lg md:text-xl text-muted-foreground max-w-xl mb-8 animate-fade-in-up" style={{ animationDelay: "200ms" }}>
+              Experience the future of car buying with our intelligent AI assistance.
+              Analyze market prices, predict value, and bid with confidence.
             </p>
+
+            <div className="flex flex-wrap gap-4 animate-fade-in-up" style={{ animationDelay: "300ms" }}>
+              <button className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3.5 rounded-xl font-semibold shadow-lg shadow-primary/25 transition-all hover:scale-105 hover:shadow-xl active:scale-95">
+                Browse Inventory
+              </button>
+              <button className="bg-white/50 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/80 px-8 py-3.5 rounded-xl font-semibold transition-all hover:scale-105 active:scale-95">
+                Sell Your Car
+              </button>
+            </div>
           </div>
         </section>
 

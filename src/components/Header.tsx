@@ -6,7 +6,18 @@ import logo from "@/assets/logo.png";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   const location = useLocation();
+
+  const toggleTheme = () => {
+    const newTheme = !isDark;
+    setIsDark(newTheme);
+    if (newTheme) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -18,16 +29,20 @@ const Header = () => {
   ];
 
   return (
-    <header className="bg-card/95 backdrop-blur-md border-b border-border/50 sticky top-0 z-50">
+    <header className="bg-background/80 backdrop-blur-xl border-b border-border/40 sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center group">
-            <img
-              src={logo}
-              alt="Automotive AI Vehicle Marketplace"
-              className="h-12 w-auto transition-transform duration-300 group-hover:scale-105"
-            />
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent-racing rounded-full blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
+              <div className="relative h-10 w-10 bg-primary rounded-xl flex items-center justify-center transform group-hover:scale-105 transition-all duration-300">
+                <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-white" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              </div>
+            </div>
+            <span className="font-heading font-bold text-xl tracking-tight text-foreground group-hover:text-primary transition-colors">
+              Auto<span className="text-primary">Market</span>
+            </span>
           </Link>
 
           {/* Navigation - Desktop */}
@@ -36,12 +51,14 @@ const Header = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex items-center gap-1.5 font-medium transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full ${
-                  isActive(link.path) ? "text-primary after:w-full" : "text-muted-foreground hover:text-primary"
-                }`}
+                className={`flex items-center gap-1.5 font-medium text-sm transition-all duration-200 relative py-2 px-1 hover:text-primary ${isActive(link.path) ? "text-primary font-semibold" : "text-muted-foreground"
+                  }`}
               >
                 {link.icon && <link.icon className="w-4 h-4" />}
                 {link.label}
+                {isActive(link.path) && (
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full animate-fade-in" />
+                )}
               </Link>
             ))}
           </nav>
@@ -51,25 +68,33 @@ const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="h-10 w-10 rounded-full hover:bg-primary/10"
+              className="h-10 w-10 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
             >
               <Search className="h-5 w-5" />
             </Button>
             <Button
               variant="outline"
-              className="px-5 h-11 rounded-xl font-semibold border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300"
+              className="px-5 h-10 rounded-xl font-semibold border-border/50 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-300"
               asChild
             >
               <Link to="/create-listing">
                 <Plus className="w-4 h-4 mr-1.5" />
-                Sell
+                Sell Car
               </Link>
             </Button>
             <Button
-              className="px-6 h-11 rounded-xl font-semibold shadow-premium hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-0.5"
+              className="px-6 h-10 rounded-xl font-semibold bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300"
               asChild
             >
               <Link to="/login">Sign In</Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 circle-button hover:bg-muted"
+              onClick={toggleTheme}
+            >
+              {isDark ? '🌞' : '🌙'}
             </Button>
           </div>
 
@@ -91,11 +116,10 @@ const Header = () => {
                   key={link.path}
                   to={link.path}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-2 font-medium px-3 py-2.5 rounded-xl transition-colors ${
-                    isActive(link.path)
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  }`}
+                  className={`flex items-center gap-2 font-medium px-3 py-2.5 rounded-xl transition-colors ${isActive(link.path)
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    }`}
                 >
                   {link.icon && <link.icon className="w-4 h-4" />}
                   {link.label}

@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 210 40% 96%;
+    --background: 222 47% 98%;
     --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
@@ -13,35 +13,36 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 217 91% 45%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 221 83% 53%;
+    /* Royal Blue */
+    --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
 
-    --muted: 210 20% 90%;
+    --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 217 91% 45%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 221 83% 53%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 210 40% 98%;
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 217 91% 45%;
+    --ring: 221 83% 53%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    /* Premium accent colors */
+    /* Professional accent colors */
     --accent-gold: 45 93% 47%;
     --accent-charcoal: 220 13% 18%;
-    --accent-racing: 0 84% 50%;
+    --accent-racing: 0 84% 60%;
 
     /* Gradient colors */
-    --gradient-start: 217 91% 45%;
-    --gradient-end: 217 91% 60%;
+    --gradient-start: 221 83% 53%;
+    --gradient-end: 210 100% 63%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5% 26%;
@@ -54,8 +55,9 @@
   }
 
   .dark {
-    --background: 222 47% 8%;
+    --background: 222 47% 11%;
     --foreground: 210 40% 98%;
+    /* ... (rest of dark mode vars matching blue theme if needed, ensuring contrast) */
 
     --card: 222 47% 11%;
     --card-foreground: 210 40% 98%;
@@ -63,8 +65,8 @@
     --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 217 91% 55%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 11%;
 
     --secondary: 217 33% 18%;
     --secondary-foreground: 210 40% 98%;
@@ -101,9 +103,36 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'DM Sans', sans-serif;
+    /* Animated Grid Background */
+    background-size: 40px 40px;
+    background-image:
+      linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    animation: pan 60s linear infinite;
+    min-height: 100vh;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  /* Define the pan animation if not present */
+  @keyframes pan {
+    0% {
+      background-position: 0 0;
+    }
+
+    100% {
+      background-position: 100% 100%;
+    }
+  }
+
+  .dark body {
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Outfit', sans-serif;
   }
 }
@@ -150,9 +179,12 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-20px);
   }
@@ -163,12 +195,15 @@
     transform: translateX(-100%);
     opacity: 0;
   }
+
   10% {
     opacity: 0.3;
   }
+
   90% {
     opacity: 0.3;
   }
+
   100% {
     transform: translateX(100vw);
     opacity: 0;
@@ -179,9 +214,11 @@
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
@@ -192,6 +229,7 @@
     transform: scale(0);
     opacity: 1;
   }
+
   100% {
     transform: scale(4);
     opacity: 0;

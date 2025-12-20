@@ -22,79 +22,79 @@ const Auctions = () => {
   const liveAuctions = [
     {
       id: "1",
-      title: "2023 Porsche 911 Carrera S",
+      title: "2023 Toyota Fortuner Legender",
       price: 0,
-      currentBid: 125000,
-      image: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?w=600",
+      currentBid: 14500000,
+      image: "https://images.unsplash.com/photo-1626359043236-fa2a88448d3e?w=600",
       year: 2023,
-      mileage: "3,200 mi",
-      fuelType: "Gasoline",
-      location: "Beverly Hills, CA",
+      mileage: "5,200 km",
+      fuelType: "Diesel",
+      location: "Lahore, Punjab",
       timeLeft: "2h 45m",
       isAuction: true,
     },
     {
       id: "2",
-      title: "2022 Lamborghini Huracán",
+      title: "2022 Honda Civic RS",
       price: 0,
-      currentBid: 245000,
-      image: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=600",
+      currentBid: 9200000,
+      image: "https://images.unsplash.com/photo-1605816260655-66795f553316?w=600",
       year: 2022,
-      mileage: "5,800 mi",
-      fuelType: "Gasoline",
-      location: "Miami, FL",
+      mileage: "15,800 km",
+      fuelType: "Petrol",
+      location: "Karachi, Sindh",
       timeLeft: "4h 12m",
       isAuction: true,
     },
     {
       id: "3",
-      title: "2024 Ferrari Roma",
+      title: "2024 Haval H6 HEV",
       price: 0,
-      currentBid: 198000,
-      image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=600",
+      currentBid: 11800000,
+      image: "https://images.unsplash.com/photo-1633512217983-49d799f243be?w=600",
       year: 2024,
-      mileage: "1,200 mi",
-      fuelType: "Gasoline",
-      location: "New York, NY",
+      mileage: "1,200 km",
+      fuelType: "Hybrid",
+      location: "Islamabad, ICT",
       timeLeft: "1h 30m",
       isAuction: true,
     },
     {
       id: "4",
-      title: "2023 McLaren 720S",
+      title: "2023 MG HS Essence",
       price: 0,
-      currentBid: 285000,
-      image: "https://images.unsplash.com/photo-1621135802920-133df287f89c?w=600",
+      currentBid: 8500000,
+      image: "https://images.unsplash.com/photo-1606824967397-6a30c5112cc4?w=600",
       year: 2023,
-      mileage: "2,400 mi",
-      fuelType: "Gasoline",
-      location: "Las Vegas, NV",
+      mileage: "9,400 km",
+      fuelType: "Petrol",
+      location: "Peshawar, KPK",
       timeLeft: "6h 20m",
       isAuction: true,
     },
     {
       id: "5",
-      title: "2022 Aston Martin Vantage",
+      title: "2022 Toyota Hilux Revo Rocco",
       price: 0,
-      currentBid: 165000,
-      image: "https://images.unsplash.com/photo-1596468138638-f64c02c9c8a4?w=600",
+      currentBid: 12500000,
+      image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=600",
       year: 2022,
-      mileage: "8,100 mi",
-      fuelType: "Gasoline",
-      location: "Scottsdale, AZ",
+      mileage: "28,100 km",
+      fuelType: "Diesel",
+      location: "Quetta, Balochistan",
       timeLeft: "8h 55m",
       isAuction: true,
     },
     {
       id: "6",
-      title: "2023 Bentley Continental GT",
+      title: "2023 Suzuki Swift GLX",
       price: 0,
-      currentBid: 215000,
-      image: "https://images.unsplash.com/photo-1563720360172-67b8f3dce741?w=600",
+      currentBid: 4150000,
+      image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600",
       year: 2023,
-      mileage: "4,500 mi",
-      fuelType: "Gasoline",
-      location: "Houston, TX",
+      mileage: "4,500 km",
+      fuelType: "Petrol",
+      location: "Faisalabad, Punjab",
       timeLeft: "3h 10m",
       isAuction: true,
     },
@@ -154,11 +154,10 @@ const Auctions = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`flex items-center gap-2 px-5 py-3 rounded-xl font-medium whitespace-nowrap transition-all duration-300 ${
-                activeTab === tab.id
+              className={`flex items-center gap-2 px-5 py-3 rounded-xl font-medium whitespace-nowrap transition-all duration-300 ${activeTab === tab.id
                   ? "bg-primary text-primary-foreground shadow-premium"
                   : "bg-card border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/50"
-              }`}
+                }`}
             >
               <tab.icon className="w-4 h-4" />
               {tab.label}
@@ -199,21 +198,19 @@ const Auctions = () => {
             <div className="flex items-center gap-2 bg-muted rounded-xl p-1">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2.5 rounded-lg transition-all ${
-                  viewMode === "grid"
+                className={`p-2.5 rounded-lg transition-all ${viewMode === "grid"
                     ? "bg-primary text-primary-foreground shadow-premium"
                     : "text-muted-foreground hover:text-foreground"
-                }`}
+                  }`}
               >
                 <Grid3X3 className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2.5 rounded-lg transition-all ${
-                  viewMode === "list"
+                className={`p-2.5 rounded-lg transition-all ${viewMode === "list"
                     ? "bg-primary text-primary-foreground shadow-premium"
                     : "text-muted-foreground hover:text-foreground"
-                }`}
+                  }`}
               >
                 <List className="w-5 h-5" />
               </button>
@@ -258,11 +255,10 @@ const Auctions = () => {
             </div>
 
             <div
-              className={`grid gap-6 ${
-                viewMode === "grid"
+              className={`grid gap-6 ${viewMode === "grid"
                   ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
                   : "grid-cols-1"
-              }`}
+                }`}
             >
               {liveAuctions.map((vehicle, index) => (
                 <VehicleCard key={vehicle.id} {...vehicle} delay={index * 100} />

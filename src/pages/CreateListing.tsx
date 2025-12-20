@@ -14,7 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import {
   Upload,
   Car,
-  DollarSign,
+  Banknote,
   FileText,
   Image as ImageIcon,
   Sparkles,
@@ -32,7 +32,7 @@ const CreateListing = () => {
   const steps = [
     { id: 1, title: "Vehicle Details", icon: Car },
     { id: 2, title: "Photos", icon: ImageIcon },
-    { id: 3, title: "Pricing", icon: DollarSign },
+    { id: 3, title: "Pricing", icon: Banknote },
     { id: 4, title: "Description", icon: FileText },
   ];
 
@@ -73,22 +73,20 @@ const CreateListing = () => {
             <div key={step.id} className="flex items-center">
               <button
                 onClick={() => setCurrentStep(step.id)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                  currentStep === step.id
-                    ? "bg-primary text-primary-foreground shadow-premium"
-                    : currentStep > step.id
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${currentStep === step.id
+                  ? "bg-primary text-primary-foreground shadow-premium"
+                  : currentStep > step.id
                     ? "bg-primary/20 text-primary"
                     : "bg-card border border-border/50 text-muted-foreground hover:border-primary/50"
-                }`}
+                  }`}
               >
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                    currentStep === step.id
-                      ? "bg-primary-foreground/20"
-                      : currentStep > step.id
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${currentStep === step.id
+                    ? "bg-primary-foreground/20"
+                    : currentStep > step.id
                       ? "bg-primary/30"
                       : "bg-muted"
-                  }`}
+                    }`}
                 >
                   {step.id}
                 </div>
@@ -318,14 +316,14 @@ const CreateListing = () => {
                   <div className="space-y-2">
                     <Label>Starting Bid *</Label>
                     <div className="relative">
-                      <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">PKR</span>
                       <Input placeholder="10,000" type="number" className="h-12 pl-12 rounded-xl" />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label>Reserve Price (Optional)</Label>
                     <div className="relative">
-                      <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">PKR</span>
                       <Input placeholder="15,000" type="number" className="h-12 pl-12 rounded-xl" />
                     </div>
                   </div>
@@ -346,7 +344,7 @@ const CreateListing = () => {
                   <div className="space-y-2">
                     <Label>Buy Now Price (Optional)</Label>
                     <div className="relative">
-                      <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">PKR</span>
                       <Input placeholder="25,000" type="number" className="h-12 pl-12 rounded-xl" />
                     </div>
                   </div>
@@ -356,7 +354,7 @@ const CreateListing = () => {
                   <div className="space-y-2">
                     <Label>Asking Price *</Label>
                     <div className="relative">
-                      <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">PKR</span>
                       <Input placeholder="25,000" type="number" className="h-12 pl-12 rounded-xl" />
                     </div>
                   </div>
@@ -380,7 +378,7 @@ const CreateListing = () => {
                     <p className="text-sm text-muted-foreground mb-2">
                       Based on market analysis, similar vehicles are selling for:
                     </p>
-                    <p className="font-heading text-2xl font-bold text-primary">$22,500 - $26,800</p>
+                    <p className="font-heading text-2xl font-bold text-primary">PKR 22,500 - PKR 26,800</p>
                   </div>
                 </div>
               </div>
