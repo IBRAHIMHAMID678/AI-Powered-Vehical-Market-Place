@@ -1,11 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Search, Menu } from "lucide-react";
+import { Search, Menu, Plus, Package } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/logo.png";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  const isActive = (path: string) => location.pathname === path;
+
+  const navLinks = [
+    { path: "/", label: "Home" },
+    { path: "/buy-now", label: "Buy Now" },
+    { path: "/auctions", label: "Auctions" },
+    { path: "/inventory", label: "Inventory", icon: Package },
+  ];
 
   return (
     <header className="bg-card/95 backdrop-blur-md border-b border-border/50 sticky top-0 z-50">
@@ -21,28 +31,22 @@ const Header = () => {
           </Link>
 
           {/* Navigation - Desktop */}
-          <nav className="hidden md:flex items-center space-x-10">
-            <Link
-              to="/"
-              className="text-foreground font-medium hover:text-primary transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full"
-            >
-              Home
-            </Link>
-            <Link
-              to="/auctions"
-              className="text-muted-foreground font-medium hover:text-primary transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full"
-            >
-              Auctions
-            </Link>
-            <Link
-              to="/buy-now"
-              className="text-muted-foreground font-medium hover:text-primary transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full"
-            >
-              Buy Now
-            </Link>
+          <nav className="hidden lg:flex items-center space-x-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`flex items-center gap-1.5 font-medium transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full ${
+                  isActive(link.path) ? "text-primary after:w-full" : "text-muted-foreground hover:text-primary"
+                }`}
+              >
+                {link.icon && <link.icon className="w-4 h-4" />}
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
-          {/* Auth Buttons */}
+          {/* Actions */}
           <div className="hidden md:flex items-center space-x-3">
             <Button
               variant="ghost"
@@ -52,23 +56,26 @@ const Header = () => {
               <Search className="h-5 w-5" />
             </Button>
             <Button
+              variant="outline"
+              className="px-5 h-11 rounded-xl font-semibold border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300"
+              asChild
+            >
+              <Link to="/create-listing">
+                <Plus className="w-4 h-4 mr-1.5" />
+                Sell
+              </Link>
+            </Button>
+            <Button
               className="px-6 h-11 rounded-xl font-semibold shadow-premium hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-0.5"
               asChild
             >
               <Link to="/login">Sign In</Link>
             </Button>
-            <Button
-              variant="outline"
-              className="px-6 h-11 rounded-xl font-semibold border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300"
-              asChild
-            >
-              <Link to="/register">Register</Link>
-            </Button>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+            className="lg:hidden p-2 rounded-lg hover:bg-muted transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             <Menu className="h-6 w-6" />
@@ -77,22 +84,36 @@ const Header = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border animate-fade-in">
-            <nav className="flex flex-col space-y-4">
-              <Link to="/" className="text-foreground font-medium px-2 py-2 hover:bg-muted rounded-lg">
-                Home
+          <div className="lg:hidden py-4 border-t border-border animate-fade-in">
+            <nav className="flex flex-col space-y-2">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`flex items-center gap-2 font-medium px-3 py-2.5 rounded-xl transition-colors ${
+                    isActive(link.path)
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  {link.icon && <link.icon className="w-4 h-4" />}
+                  {link.label}
+                </Link>
+              ))}
+              <Link
+                to="/create-listing"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 font-medium px-3 py-2.5 rounded-xl text-primary bg-primary/10"
+              >
+                <Plus className="w-4 h-4" />
+                Create Listing
               </Link>
-              <Link to="/auctions" className="text-muted-foreground font-medium px-2 py-2 hover:bg-muted rounded-lg">
-                Auctions
-              </Link>
-              <Link to="/buy-now" className="text-muted-foreground font-medium px-2 py-2 hover:bg-muted rounded-lg">
-                Buy Now
-              </Link>
-              <div className="flex gap-3 pt-2">
-                <Button className="flex-1" asChild>
+              <div className="flex gap-3 pt-3 mt-2 border-t border-border">
+                <Button className="flex-1 rounded-xl" asChild>
                   <Link to="/login">Sign In</Link>
                 </Button>
-                <Button variant="outline" className="flex-1" asChild>
+                <Button variant="outline" className="flex-1 rounded-xl" asChild>
                   <Link to="/register">Register</Link>
                 </Button>
               </div>
