@@ -22,7 +22,7 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (password !== confirmPassword) {
       toast({
         title: "Error",
@@ -70,7 +70,7 @@ const Register = () => {
         <div className="absolute inset-0">
           <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse-slow" />
           <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
-          
+
           {/* Floating Particles */}
           <div className="absolute top-1/4 left-1/3 animate-float">
             <Sparkles className="h-6 w-6 text-primary/30" />
@@ -81,10 +81,18 @@ const Register = () => {
         </div>
 
         <div className="relative z-10 p-12 lg:p-16 flex flex-col justify-center">
-          <Link to="/" className="mb-12">
-            <img src={logo} alt="Automotive" className="h-14 w-auto" />
+          <Link to="/" className="mb-12 flex items-center gap-2 group">
+            <div className="relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent-racing rounded-full blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
+              <div className="relative h-12 w-12 bg-primary rounded-xl flex items-center justify-center transform group-hover:scale-105 transition-all duration-300">
+                <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 text-white" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              </div>
+            </div>
+            <span className="font-heading font-bold text-2xl tracking-tight text-foreground group-hover:text-primary transition-colors">
+              Auto<span className="text-primary">Market</span>
+            </span>
           </Link>
-          
+
           <div className="max-w-lg animate-fade-in">
             <p className="text-primary font-semibold tracking-wide text-sm mb-4 uppercase">
               Get Started Today
@@ -133,8 +141,13 @@ const Register = () => {
         <div className="w-full max-w-md animate-fade-in-up">
           {/* Mobile Logo */}
           <div className="lg:hidden mb-8 text-center">
-            <Link to="/">
-              <img src={logo} alt="Automotive" className="h-12 w-auto mx-auto" />
+            <Link to="/" className="inline-flex items-center gap-2 group">
+              <div className="relative h-10 w-10 bg-primary rounded-xl flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-white" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              </div>
+              <span className="font-heading font-bold text-2xl tracking-tight text-foreground">
+                Auto<span className="text-primary">Market</span>
+              </span>
             </Link>
           </div>
 

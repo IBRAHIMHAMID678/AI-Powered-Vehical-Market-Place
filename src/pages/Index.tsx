@@ -35,19 +35,19 @@ const Index = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         {/* Hero Section */}
         {/* Hero Section */}
-        <section className="relative mb-12 lg:mb-16 animate-fade-in rounded-3xl overflow-hidden shadow-2xl">
-          {/* Background Image */}
-          <div className="absolute inset-0 z-0">
+        <section className="relative mb-12 lg:mb-16 animate-fade-in rounded-3xl overflow-hidden shadow-2xl group">
+          {/* Background Image with Zoom Effect */}
+          <div className="absolute inset-0 z-0 overflow-hidden">
             <img
               src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1920&auto=format&fit=crop"
               alt="Luxury Car Background"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-transparent" />
           </div>
 
           <div className="relative z-10 max-w-3xl py-20 px-8 md:px-12">
-            <div className="inline-flex items-center gap-2 bg-primary/10 backdrop-blur-md border border-primary/20 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-6 animate-fade-in-up">
+            <div className="inline-flex items-center gap-2 bg-primary/10 backdrop-blur-md border border-primary/20 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-6 animate-float">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -57,7 +57,7 @@ const Index = () => {
 
             <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: "100ms" }}>
               Find Your Perfect <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-racing">Dream Ride</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-racing animate-gradient">Dream Ride</span>
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground max-w-xl mb-8 animate-fade-in-up" style={{ animationDelay: "200ms" }}>
@@ -66,10 +66,11 @@ const Index = () => {
             </p>
 
             <div className="flex flex-wrap gap-4 animate-fade-in-up" style={{ animationDelay: "300ms" }}>
-              <button className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3.5 rounded-xl font-semibold shadow-lg shadow-primary/25 transition-all hover:scale-105 hover:shadow-xl active:scale-95">
-                Browse Inventory
+              <button className="relative overflow-hidden bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3.5 rounded-xl font-semibold shadow-lg shadow-primary/25 transition-all hover:scale-105 hover:shadow-xl active:scale-95 group/btn">
+                <span className="relative z-10">Browse Inventory</span>
+                <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
               </button>
-              <button className="bg-white/50 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/80 px-8 py-3.5 rounded-xl font-semibold transition-all hover:scale-105 active:scale-95">
+              <button className="bg-white/50 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/80 px-8 py-3.5 rounded-xl font-semibold transition-all hover:scale-105 active:scale-95 hover:shadow-lg">
                 Sell Your Car
               </button>
             </div>

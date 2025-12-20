@@ -11,7 +11,7 @@ interface CategoryCardProps {
 const CategoryCard = ({ title, subtitle, listingCount, image, delay = 0 }: CategoryCardProps) => {
   return (
     <div
-      className="group bg-card rounded-2xl p-6 shadow-premium card-hover cursor-pointer border border-transparent hover:border-primary/20 animate-fade-in-up"
+      className="group bg-card rounded-2xl p-6 shadow-premium hover-scale-glow cursor-pointer border border-transparent hover:border-primary/20 animate-fade-in-up"
       style={{ animationDelay: `${delay}ms` }}
     >
       <div className="flex items-start justify-between">
