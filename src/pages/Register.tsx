@@ -34,16 +34,21 @@ const Register = () => {
 
     setIsLoading(true);
     try {
-      // TODO: Connect to MongoDB and create user
-      // Example:
-      // const existingUser = await db.collection('users').findOne({ email });
-      // if (existingUser) {
-      //   throw new Error('User already exists');
-      // }
-      // const hashedPassword = await hashPassword(password);
-      // await db.collection('users').insertOne({ name, email, password: hashedPassword });
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-      console.log("Register attempt:", { name, email, password });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.msg || 'Registration failed');
+      }
+
+      console.log("Register attempt successful:", data);
 
       toast({
         title: "Success",
@@ -60,6 +65,7 @@ const Register = () => {
     } finally {
       setIsLoading(false);
     }
+
   };
 
   return (

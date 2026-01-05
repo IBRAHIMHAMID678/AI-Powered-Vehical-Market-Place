@@ -24,15 +24,25 @@ const Login = () => {
 
     setIsLoading(true);
     try {
-      // TODO: Connect to MongoDB and verify credentials
-      // Example:
-      // const user = await db.collection('users').findOne({ email });
-      // if (!user || !await verifyPassword(password, user.password)) {
-      //   throw new Error('Invalid credentials');
-      // }
-      // Store user session/token as needed
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-      console.log("Login attempt:", { email, password });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.msg || 'Login failed');
+      }
+
+      // Store token
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      console.log("Login attempt successful:", data);
 
       toast({
         title: "Success",
