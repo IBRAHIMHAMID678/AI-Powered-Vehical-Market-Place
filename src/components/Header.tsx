@@ -1,13 +1,41 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Search, Menu, Plus, Package } from "lucide-react";
+import { Search, Menu, Plus, Package, User, LogOut } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/logo.png";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const location = useLocation();
+
+  const [user, setUser] = useState<any>(null);
+
+  useState(() => {
+    // Check for user on mount
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error("Invalid user data");
+      }
+    }
+  });
+
+  const handleSignOut = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    window.location.href = '/';
+  };
 
   const toggleTheme = () => {
     const newTheme = !isDark;
@@ -82,12 +110,34 @@ const Header = () => {
                 Sell Car
               </Link>
             </Button>
-            <Button
-              className="px-6 h-10 rounded-xl font-semibold bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300"
-              asChild
-            >
-              <Link to="/login">Sign In</Link>
-            </Button>
+
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="px-4 h-10 rounded-xl font-semibold hover:bg-primary/10 transition-all duration-300 flex items-center gap-2"
+                  >
+                    <User className="h-5 w-5 text-primary" />
+                    <span className="max-w-[100px] truncate">{user.name}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48 bg-card border-border shadow-premium">
+                  <DropdownMenuItem className="cursor-pointer" onClick={handleSignOut}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button
+                className="px-6 h-10 rounded-xl font-semibold bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300"
+                asChild
+              >
+                <Link to="/login">Sign In</Link>
+              </Button>
+            )}
+
             <Button
               variant="ghost"
               size="icon"
@@ -134,12 +184,20 @@ const Header = () => {
                 Create Listing
               </Link>
               <div className="flex gap-3 pt-3 mt-2 border-t border-border">
-                <Button className="flex-1 rounded-xl" asChild>
-                  <Link to="/login">Sign In</Link>
-                </Button>
-                <Button variant="outline" className="flex-1 rounded-xl" asChild>
-                  <Link to="/register">Register</Link>
-                </Button>
+                {user ? (
+                  <Button onClick={handleSignOut} variant="outline" className="flex-1 rounded-xl">
+                    Sign Out
+                  </Button>
+                ) : (
+                  <>
+                    <Button className="flex-1 rounded-xl" asChild>
+                      <Link to="/login">Sign In</Link>
+                    </Button>
+                    <Button variant="outline" className="flex-1 rounded-xl" asChild>
+                      <Link to="/register">Register</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </nav>
           </div>

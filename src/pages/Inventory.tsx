@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -75,67 +76,68 @@ const Inventory = () => {
     },
   ];
 
-  const listings = [
-    {
-      id: "1",
-      title: "2023 Toyota Camry XSE",
-      image: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=100",
-      price: 32500,
-      status: "active",
-      views: 245,
-      inquiries: 12,
-      type: "buy-now",
-      createdAt: "2024-01-15",
-    },
-    {
-      id: "2",
-      title: "2022 BMW X5 xDrive40i",
-      image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=100",
-      price: 58900,
-      currentBid: 52000,
-      status: "auction",
-      views: 892,
-      inquiries: 34,
-      type: "auction",
-      timeLeft: "2d 5h",
-      createdAt: "2024-01-10",
-    },
-    {
-      id: "3",
-      title: "2024 Tesla Model 3",
-      image: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=100",
-      price: 42000,
-      status: "pending",
-      views: 1205,
-      inquiries: 28,
-      type: "buy-now",
-      createdAt: "2024-01-08",
-    },
-    {
-      id: "4",
-      title: "2023 Mercedes-Benz C300",
-      image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=100",
-      price: 47500,
-      status: "sold",
-      views: 567,
-      inquiries: 15,
-      type: "buy-now",
-      createdAt: "2024-01-05",
-    },
-    {
-      id: "5",
-      title: "2023 Porsche 911 Carrera S",
-      image: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?w=100",
-      price: 135000,
-      currentBid: 128000,
-      status: "auction",
-      views: 2341,
-      inquiries: 89,
-      type: "auction",
-      timeLeft: "5h 30m",
-      createdAt: "2024-01-12",
-    },
-  ];
+  const [listings, setListings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalListings, setTotalListings] = useState(0);
+
+  const [activeTab, setActiveTab] = useState<"listings" | "liked">("listings");
+
+  useEffect(() => {
+    fetchListings();
+  }, [page, activeTab]);
+
+  const fetchListings = async () => {
+    try {
+      setLoading(true);
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const token = localStorage.getItem('token');
+      const userId = user.id || user._id;
+
+      if (activeTab === 'listings') {
+        // Fetch My Listings
+        let url = `http://localhost:5000/api/cars?page=${page}&limit=10`;
+        if (userId) {
+          url += `&user=${userId}`;
+        }
+        const response = await fetch(url);
+        const data = await response.json();
+        setListings(data.cars);
+        setTotalPages(data.totalPages);
+        setTotalListings(data.totalCars);
+      } else {
+        // Fetch Liked Cars
+        if (!token) {
+          setListings([]);
+          setTotalListings(0);
+          setLoading(false);
+          return;
+        }
+
+        // Get favorite IDs
+        const favRes = await fetch('http://localhost:5000/api/auth/favorites', {
+          headers: { 'x-auth-token': token }
+        });
+        const favData = await favRes.json(); // This is an array of populated car objects (or IDs if not populated)
+
+        // If populated, we can use directly. My auth route populates 'savedCars'.
+        // However, the structure might be different from /api/cars response. 
+        // Let's assume populate returns full car objects.
+
+        // Since pagination on favorites isn't implemented in the simple auth route yet, we'll mimic it or just show all.
+        // For now, let's show all favorites (client-side pagination if needed, but keeping it simple).
+
+        setListings(favData);
+        setTotalPages(1);
+        setTotalListings(favData.length);
+      }
+    } catch (error) {
+      console.error("Error fetching listings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
@@ -167,6 +169,20 @@ const Inventory = () => {
             <p className="text-muted-foreground">
               Manage your vehicle listings, track performance, and monitor sales
             </p>
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={() => { setActiveTab("listings"); setPage(1); }}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'listings' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'}`}
+              >
+                My Listings
+              </button>
+              <button
+                onClick={() => { setActiveTab("liked"); setPage(1); }}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'liked' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'}`}
+              >
+                Liked Cars
+              </button>
+            </div>
           </div>
           <Button className="rounded-xl px-6 shadow-premium hover:shadow-premium-lg transition-all" asChild>
             <Link to="/create-listing">
@@ -258,7 +274,7 @@ const Inventory = () => {
             <TableBody>
               {listings.map((listing, index) => (
                 <TableRow
-                  key={listing.id}
+                  key={listing._id}
                   className="hover:bg-muted/50 border-border/50 animate-fade-in"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
@@ -317,14 +333,18 @@ const Inventory = () => {
                           <Eye className="w-4 h-4 mr-2" />
                           View Listing
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer">
-                          <Edit className="w-4 h-4 mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer text-accent-racing focus:text-accent-racing">
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
+                        {activeTab === 'listings' && (
+                          <>
+                            <DropdownMenuItem className="cursor-pointer">
+                              <Edit className="w-4 h-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer text-accent-racing focus:text-accent-racing">
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -356,14 +376,26 @@ const Inventory = () => {
         {/* Pagination */}
         <div className="flex items-center justify-between mt-6">
           <p className="text-sm text-muted-foreground">
-            Showing <span className="font-medium text-foreground">1-5</span> of{" "}
-            <span className="font-medium text-foreground">24</span> listings
+            Showing <span className="font-medium text-foreground">{(page - 1) * 10 + 1}-{Math.min(page * 10, totalListings)}</span> of{" "}
+            <span className="font-medium text-foreground">{totalListings}</span> listings
           </p>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="rounded-lg" disabled>
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-lg"
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1 || loading}
+            >
               Previous
             </Button>
-            <Button variant="outline" size="sm" className="rounded-lg">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-lg"
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages || loading}
+            >
               Next
             </Button>
           </div>

@@ -4,8 +4,42 @@ import CategoryCard from "@/components/CategoryCard";
 import suvIcon from "@/assets/suv-icon.png";
 import sedanIcon from "@/assets/sedan-icon.png";
 import truckIcon from "@/assets/truck-icon.png";
+import { Link } from "react-router-dom";
+import VehicleCard from "@/components/VehicleCard";
+import { useState, useEffect } from "react";
 
 const Index = () => {
+  const [featuredVehicles, setFeaturedVehicles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/cars?limit=6"); // Fetch 6 random/latest cars
+        const data = await res.json();
+        if (data.cars) {
+          const mapped = data.cars.map((car: any) => ({
+            id: car._id,
+            title: car.title,
+            price: car.price,
+            image: car.image,
+            year: car.year || parseInt(car.title.match(/\d{4}/)?.[0] || "2020"),
+            mileage: car.mileage || "N/A",
+            fuelType: car.fuelType || car.features?.find((f: string) => ["Petrol", "Diesel", "Hybrid", "Electric"].includes(f)) || "Petrol",
+            location: car.location,
+            make: car.make || car.title.split(' ')[1] || 'Unknown'
+          }));
+          setFeaturedVehicles(mapped);
+        }
+      } catch (err) {
+        console.error("Failed to fetch featured vehicles", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFeatured();
+  }, []);
+
   const categories = [
     {
       title: "SUVs",
@@ -66,13 +100,17 @@ const Index = () => {
             </p>
 
             <div className="flex flex-wrap gap-4 animate-fade-in-up" style={{ animationDelay: "300ms" }}>
-              <button className="relative overflow-hidden bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3.5 rounded-xl font-semibold shadow-lg shadow-primary/25 transition-all hover:scale-105 hover:shadow-xl active:scale-95 group/btn">
-                <span className="relative z-10">Browse Inventory</span>
-                <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-              </button>
-              <button className="bg-white/50 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/80 px-8 py-3.5 rounded-xl font-semibold transition-all hover:scale-105 active:scale-95 hover:shadow-lg">
-                Sell Your Car
-              </button>
+              <Link to="/buy-now">
+                <button className="relative overflow-hidden bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3.5 rounded-xl font-semibold shadow-lg shadow-primary/25 transition-all hover:scale-105 hover:shadow-xl active:scale-95 group/btn">
+                  <span className="relative z-10">Browse Inventory</span>
+                  <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                </button>
+              </Link>
+              <Link to="/create-listing">
+                <button className="bg-white/50 backdrop-blur-md border border-white/20 text-foreground hover:bg-white/80 px-8 py-3.5 rounded-xl font-semibold transition-all hover:scale-105 active:scale-95 hover:shadow-lg">
+                  Sell Your Car
+                </button>
+              </Link>
             </div>
           </div>
         </section>
@@ -80,6 +118,51 @@ const Index = () => {
         {/* Search Filters */}
         <section className="mb-16 lg:mb-20">
           <SearchBar />
+        </section>
+
+        {/* Featured Vehicles */}
+        <section className="mb-16 lg:mb-20">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground">
+                Featured Vehicles
+              </h2>
+              <p className="text-muted-foreground mt-1">
+                Hand-picked selections just for you
+              </p>
+            </div>
+            <Link
+              to="/buy-now"
+              className="hidden sm:flex items-center text-primary font-medium hover:underline"
+            >
+              View Inventory
+              <svg
+                className="w-4 h-4 ml-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredVehicles.map((vehicle, index) => (
+              <VehicleCard key={vehicle.id} {...vehicle} delay={index * 100} />
+            ))}
+          </div>
+
+          {loading && (
+            <div className="flex justify-center py-10">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+          )}
         </section>
 
         {/* Categories Section */}
@@ -93,8 +176,8 @@ const Index = () => {
                 Explore our curated vehicle categories
               </p>
             </div>
-            <a
-              href="#"
+            <Link
+              to="/buy-now"
               className="hidden sm:flex items-center text-primary font-medium hover:underline"
             >
               View All Categories
@@ -111,7 +194,7 @@ const Index = () => {
                   d="M9 5l7 7-7 7"
                 />
               </svg>
-            </a>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

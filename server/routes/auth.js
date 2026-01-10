@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -80,6 +81,40 @@ router.post('/login', async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(500).json({ msg: 'Server error', error: err.message });
+    }
+});
+
+// Get User Favorites
+router.get('/favorites', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).populate('savedCars');
+        res.json(user.savedCars);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// Add/Remove Favorite
+router.post('/favorites/:id', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        const carId = req.params.id;
+
+        // Check if already in favorites
+        if (user.savedCars.includes(carId)) {
+            // Remove
+            user.savedCars = user.savedCars.filter(id => id.toString() !== carId);
+        } else {
+            // Add
+            user.savedCars.push(carId);
+        }
+
+        await user.save();
+        res.json(user.savedCars);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
     }
 });
 

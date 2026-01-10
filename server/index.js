@@ -25,6 +25,10 @@ app.get('/', (req, res) => {
     res.send('AutoMarket API is running');
 });
 
+// Routes
+import carRoutes from './routes/cars.js';
+app.use('/api/cars', carRoutes);
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

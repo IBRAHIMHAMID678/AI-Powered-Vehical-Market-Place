@@ -11,6 +11,7 @@ import Auctions from "./pages/Auctions";
 import CreateListing from "./pages/CreateListing";
 import Inventory from "./pages/Inventory";
 import NotFound from "./pages/NotFound";
+import VehicleDetails from "./pages/VehicleDetails";
 import { ChatBot } from "@/components/ChatBot";
 
 const App = () => (
@@ -24,6 +25,7 @@ const App = () => (
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/buy-now" element={<BuyNow />} />
+        <Route path="/vehicles/:id" element={<VehicleDetails />} />
         <Route path="/auctions" element={<Auctions />} />
         <Route path="/create-listing" element={<CreateListing />} />
         <Route path="/inventory" element={<Inventory />} />

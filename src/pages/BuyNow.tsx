@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import VehicleCard from "@/components/VehicleCard";
-import FilterSidebar from "@/components/FilterSidebar";
+import FilterSidebar, { FilterState } from "@/components/FilterSidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,91 +11,150 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, Grid3X3, List, SlidersHorizontal } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 
 const BuyNow = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const selectedMake = searchParams.get("make");
-  const selectedPrice = searchParams.get("price");
+  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
 
-  const allVehicles = [
-    {
-      id: "1",
-      title: "2023 Toyota Corolla Altis Grande X",
-      price: 9550000,
-      image: "https://images.unsplash.com/photo-1623869675785-5ee45f061266?w=600",
-      year: 2023,
-      mileage: "12,500 km",
-      fuelType: "Petrol",
-      location: "Lahore, Punjab",
-      make: "toyota"
-    },
-    {
-      id: "2",
-      title: "2022 Honda Civic RS Turbo",
-      price: 10850000,
-      image: "https://images.unsplash.com/photo-1605816260655-66795f553316?w=600",
-      year: 2022,
-      mileage: "24,000 km",
-      fuelType: "Petrol",
-      location: "Islamabad, ICT",
-      make: "honda"
-    },
-    {
-      id: "3",
-      title: "2024 Suzuki Alto VXL",
-      price: 3250000,
-      image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600",
-      year: 2024,
-      mileage: "1,200 km",
-      fuelType: "Petrol",
-      location: "Karachi, Sindh",
-      make: "suzuki"
-    },
-    {
-      id: "4",
-      title: "2023 Kia Sportage AWD",
-      price: 9800000,
-      image: "https://images.unsplash.com/photo-1541804791-626a42207908?w=600",
-      year: 2023,
-      mileage: "18,900 km",
-      fuelType: "Petrol",
-      location: "Faisalabad, Punjab",
-      make: "kia"
-    },
-    {
-      id: "5",
-      title: "2022 Hyundai Tucson GLS",
-      price: 9200000,
-      image: "https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=600",
-      year: 2022,
-      mileage: "32,400 km",
-      fuelType: "Petrol",
-      location: "Multan, Punjab",
-      make: "hyundai"
-    },
-    {
-      id: "6",
-      title: "2023 Changan Alsvin Lumiere",
-      price: 4950000,
-      image: "https://images.unsplash.com/photo-1628886365457-36c5333f2cf1?w=600",
-      year: 2023,
-      mileage: "8,700 km",
-      fuelType: "Petrol",
-      location: "Rawalpindi, Punjab",
-      make: "changan"
-    },
-  ];
-
-  const vehicles = allVehicles.filter(v => {
-    if (selectedMake && selectedMake !== "any" && v.make !== selectedMake) return false;
-    // Simple price logic for demo
-    return true;
+  // Filter State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilters, setActiveFilters] = useState<FilterState>({
+    priceRange: [0, 50000000],
+    yearRange: [1980, 2025],
+    makes: [],
+    bodyTypes: [],
+    fuelTypes: [],
+    transmissions: [],
+    colors: [],
+    registrationCities: [],
+    locations: [],
+    engineCCRange: [600, 6000],
   });
+
+  const fetchVehicles = useCallback(async () => {
+    try {
+      setLoading(true);
+      const limit = 12;
+      let url = `http://localhost:5000/api/cars?page=${page}&limit=${limit}`;
+
+      // Search Query
+      if (searchQuery) {
+        url += `&search=${encodeURIComponent(searchQuery)}`;
+      }
+
+      // Makes
+      if (activeFilters.makes.length > 0) {
+        url += `&make=${activeFilters.makes.join(',')}`;
+      }
+
+      // Fuel
+      if (activeFilters.fuelTypes.length > 0) {
+        url += `&fuelType=${activeFilters.fuelTypes.join(',')}`;
+      }
+
+      // Body Type
+      if (activeFilters.bodyTypes.length > 0) {
+        url += `&bodyType=${activeFilters.bodyTypes.join(',')}`;
+      }
+
+      // Transmission
+      if (activeFilters.transmissions.length > 0) {
+        url += `&transmission=${activeFilters.transmissions.join(',')}`;
+      }
+
+      // Color
+      if (activeFilters.colors.length > 0) {
+        url += `&color=${encodeURIComponent(activeFilters.colors.join(','))}`; // encode for # or names
+      }
+
+      // Registration City
+      if (activeFilters.registrationCities.length > 0) {
+        url += `&registrationCity=${activeFilters.registrationCities.join(',')}`;
+      }
+
+      // Location
+      if (activeFilters.locations.length > 0) {
+        url += `&location=${activeFilters.locations.join(',')}`;
+      }
+
+      // Engine CC - Only send if restricted
+      if (activeFilters.engineCCRange[0] > 600 || activeFilters.engineCCRange[1] < 6000) {
+        url += `&minEngineCC=${activeFilters.engineCCRange[0]}&maxEngineCC=${activeFilters.engineCCRange[1]}`;
+      }
+      if (activeFilters.bodyTypes.length > 0) {
+        url += `&bodyType=${activeFilters.bodyTypes.join(',')}`;
+      }
+
+      // Transmission
+      if (activeFilters.transmissions.length > 0) {
+        url += `&transmission=${activeFilters.transmissions.join(',')}`;
+      }
+
+      // Color
+      if (activeFilters.colors.length > 0) {
+        url += `&color=${encodeURIComponent(activeFilters.colors.join(','))}`; // encode for # or names
+      }
+
+      // Price Range - Only send if restricted
+      if (activeFilters.priceRange[0] > 0 || activeFilters.priceRange[1] < 50000000) {
+        url += `&minPrice=${activeFilters.priceRange[0]}&maxPrice=${activeFilters.priceRange[1]}`;
+      }
+
+      // Year Range - Only send if restricted
+      if (activeFilters.yearRange[0] > 1980 || activeFilters.yearRange[1] < 2025) {
+        url += `&minYear=${activeFilters.yearRange[0]}&maxYear=${activeFilters.yearRange[1]}`;
+      }
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const mapped = data.cars.map((car: any) => ({
+        id: car._id,
+        title: car.title,
+        price: car.price,
+        image: car.image,
+        year: car.year || parseInt(car.title.match(/\d{4}/)?.[0] || "2020"),
+        mileage: car.mileage || "N/A",
+        fuelType: car.fuelType || car.features?.find((f: string) => ["Petrol", "Diesel", "Hybrid", "Electric"].includes(f)) || "Petrol",
+        location: car.location,
+        make: car.make || car.title.split(' ')[1] || 'Unknown'
+      }));
+
+      if (page === 1) {
+        setVehicles(mapped);
+      } else {
+        setVehicles(prev => [...prev, ...mapped]);
+      }
+      setTotal(data.totalCars);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, searchQuery, activeFilters]);
+
+  useEffect(() => {
+    fetchVehicles();
+  }, [fetchVehicles]);
+
+  const handleApplyFilters = (filters: FilterState) => {
+    setActiveFilters(filters);
+    setPage(1); // Reset to page 1 on filter change
+    setIsFilterOpen(false);
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setPage(1);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -110,9 +169,13 @@ const BuyNow = () => {
           <p className="text-muted-foreground">
             Browse our curated selection of premium vehicles available for immediate purchase
           </p>
-          {selectedMake && selectedMake !== "any" && (
-            <div className="mt-4 inline-flex items-center bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
-              Filtered by: <span className="uppercase ml-1 font-bold">{selectedMake}</span>
+          {(activeFilters.makes.length > 0) && (
+            <div className="mt-4 inline-flex items-center gap-2 flex-wrap">
+              {activeFilters.makes.map(make => (
+                <div key={make} className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
+                  {make}
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -126,6 +189,8 @@ const BuyNow = () => {
               <Input
                 placeholder="Search by make, model, or keyword..."
                 className="pl-12 h-12 rounded-xl border-border/50 focus:border-primary"
+                value={searchQuery}
+                onChange={handleSearch}
               />
             </div>
 
@@ -182,7 +247,7 @@ const BuyNow = () => {
           {/* Sidebar */}
           <aside className="hidden lg:block w-72 flex-shrink-0">
             <div className="sticky top-28">
-              <FilterSidebar />
+              <FilterSidebar onApply={handleApplyFilters} />
             </div>
           </aside>
 
@@ -194,7 +259,7 @@ const BuyNow = () => {
                 onClick={() => setIsFilterOpen(false)}
               />
               <div className="absolute right-0 top-0 bottom-0 w-80 max-w-full overflow-y-auto animate-slide-in-right">
-                <FilterSidebar isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} />
+                <FilterSidebar isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} onApply={handleApplyFilters} />
               </div>
             </div>
           )}
@@ -220,15 +285,19 @@ const BuyNow = () => {
             </div>
 
             {/* Load More */}
-            <div className="mt-12 text-center">
-              <Button
-                variant="outline"
-                size="lg"
-                className="rounded-xl px-8 font-semibold hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300"
-              >
-                Load More Vehicles
-              </Button>
-            </div>
+            {vehicles.length < total && (
+              <div className="mt-12 text-center">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setPage(p => p + 1)}
+                  disabled={loading}
+                  className="rounded-xl px-8 font-semibold hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300"
+                >
+                  {loading ? "Loading..." : "Load More Vehicles"}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </main>

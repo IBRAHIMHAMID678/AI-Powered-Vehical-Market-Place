@@ -23,11 +23,39 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const CreateListing = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [images, setImages] = useState<string[]>([]);
   const [isAuction, setIsAuction] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    make: "",
+    model: "",
+    year: "2024",
+    bodyType: "",
+    mileage: "",
+    vin: "",
+    fuelType: "",
+    transmission: "",
+    exteriorColor: "",
+    interiorColor: "",
+    price: "",
+    minBid: "",
+    title: "",
+    description: "",
+    location: "",
+    features: ""
+  });
+
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   const steps = [
     { id: 1, title: "Vehicle Details", icon: Car },
@@ -46,6 +74,46 @@ const CreateListing = () => {
     // Simulating image upload
     const newImage = `https://images.unsplash.com/photo-${Math.random().toString().slice(2, 12)}?w=300`;
     setImages([...images, newImage]);
+  };
+
+  const handlePublish = async () => {
+    try {
+      setLoading(true);
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const userId = user.id || user._id;
+
+      if (!userId) {
+        toast({ title: "Error", description: "You must be logged in to create a listing", variant: "destructive" });
+        return;
+      }
+
+      const payload = {
+        ...formData,
+        user: userId,
+        price: isAuction ? Number(formData.minBid) : Number(formData.price),
+        type: isAuction ? 'auction' : 'buy-now',
+        images: images,  // Assuming schema could handle multiple images, but checking schema... it has 'image' string.
+        image: images[0] || "", // Use first image as main image
+        year: Number(formData.year),
+        features: formData.features.split('\n').filter(Boolean)
+      };
+
+      const res = await fetch('http://localhost:5000/api/cars', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error("Failed to create listing");
+
+      toast({ title: "Success", description: "Listing created successfully!" });
+      navigate('/inventory');
+    } catch (error) {
+      console.error(error);
+      toast({ title: "Error", description: "Failed to create listing", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -109,7 +177,7 @@ const CreateListing = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label>Make *</Label>
-                  <Select>
+                  <Select onValueChange={(val) => handleChange('make', val)}>
                     <SelectTrigger className="h-12 rounded-xl">
                       <SelectValue placeholder="Select make" />
                     </SelectTrigger>
@@ -125,12 +193,17 @@ const CreateListing = () => {
 
                 <div className="space-y-2">
                   <Label>Model *</Label>
-                  <Input placeholder="e.g., Camry, Civic, F-150" className="h-12 rounded-xl" />
+                  <Input
+                    value={formData.model}
+                    onChange={(e) => handleChange('model', e.target.value)}
+                    placeholder="e.g., Camry, Civic, F-150"
+                    className="h-12 rounded-xl"
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Year *</Label>
-                  <Select>
+                  <Select onValueChange={(val) => handleChange('year', val)}>
                     <SelectTrigger className="h-12 rounded-xl">
                       <SelectValue placeholder="Select year" />
                     </SelectTrigger>
@@ -162,7 +235,13 @@ const CreateListing = () => {
 
                 <div className="space-y-2">
                   <Label>Mileage *</Label>
-                  <Input placeholder="e.g., 25000" type="number" className="h-12 rounded-xl" />
+                  <Input
+                    value={formData.mileage}
+                    onChange={(e) => handleChange('mileage', e.target.value)}
+                    placeholder="e.g., 25000"
+                    type="number"
+                    className="h-12 rounded-xl"
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -317,7 +396,13 @@ const CreateListing = () => {
                     <Label>Starting Bid *</Label>
                     <div className="relative">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">PKR</span>
-                      <Input placeholder="10,000" type="number" className="h-12 pl-12 rounded-xl" />
+                      <Input
+                        value={formData.minBid}
+                        onChange={(e) => handleChange('minBid', e.target.value)}
+                        placeholder="10,000"
+                        type="number"
+                        className="h-12 pl-12 rounded-xl"
+                      />
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -355,7 +440,13 @@ const CreateListing = () => {
                     <Label>Asking Price *</Label>
                     <div className="relative">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">PKR</span>
-                      <Input placeholder="25,000" type="number" className="h-12 pl-12 rounded-xl" />
+                      <Input
+                        value={formData.price}
+                        onChange={(e) => handleChange('price', e.target.value)}
+                        placeholder="25,000"
+                        type="number"
+                        className="h-12 pl-12 rounded-xl"
+                      />
                     </div>
                   </div>
                   <div className="space-y-2 flex items-end">
@@ -393,6 +484,8 @@ const CreateListing = () => {
               <div className="space-y-2">
                 <Label>Listing Title *</Label>
                 <Input
+                  value={formData.title}
+                  onChange={(e) => handleChange('title', e.target.value)}
                   placeholder="e.g., 2023 Toyota Camry XSE - Low Miles, One Owner"
                   className="h-12 rounded-xl"
                 />
@@ -407,6 +500,8 @@ const CreateListing = () => {
                   </Button>
                 </div>
                 <Textarea
+                  value={formData.description}
+                  onChange={(e) => handleChange('description', e.target.value)}
                   placeholder="Describe your vehicle's condition, features, history, and any modifications..."
                   className="min-h-[200px] rounded-xl resize-none"
                 />
@@ -422,7 +517,12 @@ const CreateListing = () => {
 
               <div className="space-y-2">
                 <Label>Your Location *</Label>
-                <Input placeholder="City, State" className="h-12 rounded-xl" />
+                <Input
+                  value={formData.location}
+                  onChange={(e) => handleChange('location', e.target.value)}
+                  placeholder="City, State"
+                  className="h-12 rounded-xl"
+                />
               </div>
             </div>
           )}
@@ -447,9 +547,12 @@ const CreateListing = () => {
                 <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
             ) : (
-              <Button className="rounded-xl px-8 shadow-premium hover:shadow-premium-lg transition-all bg-gradient-to-r from-primary to-primary/80">
+              <Button
+                onClick={handlePublish}
+                disabled={loading}
+                className="rounded-xl px-8 shadow-premium hover:shadow-premium-lg transition-all bg-gradient-to-r from-primary to-primary/80">
                 <Upload className="w-4 h-4 mr-2" />
-                Publish Listing
+                {loading ? "Publishing..." : "Publish Listing"}
               </Button>
             )}
           </div>

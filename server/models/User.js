@@ -22,7 +22,11 @@ const UserSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    savedCars: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Car'
+    }]
 });
 
 export default mongoose.model('User', UserSchema);

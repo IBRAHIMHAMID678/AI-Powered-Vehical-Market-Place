@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import VehicleCard from "@/components/VehicleCard";
-import FilterSidebar from "@/components/FilterSidebar";
+import FilterSidebar, { FilterState } from "@/components/FilterSidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -12,98 +12,157 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, Grid3X3, List, SlidersHorizontal, Flame, Clock, TrendingUp } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const Auctions = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [activeTab, setActiveTab] = useState<"live" | "upcoming" | "ending">("live");
 
-  const liveAuctions = [
-    {
-      id: "1",
-      title: "2023 Toyota Fortuner Legender",
-      price: 0,
-      currentBid: 14500000,
-      image: "https://images.unsplash.com/photo-1626359043236-fa2a88448d3e?w=600",
-      year: 2023,
-      mileage: "5,200 km",
-      fuelType: "Diesel",
-      location: "Lahore, Punjab",
-      timeLeft: "2h 45m",
-      isAuction: true,
-    },
-    {
-      id: "2",
-      title: "2022 Honda Civic RS",
-      price: 0,
-      currentBid: 9200000,
-      image: "https://images.unsplash.com/photo-1605816260655-66795f553316?w=600",
-      year: 2022,
-      mileage: "15,800 km",
-      fuelType: "Petrol",
-      location: "Karachi, Sindh",
-      timeLeft: "4h 12m",
-      isAuction: true,
-    },
-    {
-      id: "3",
-      title: "2024 Haval H6 HEV",
-      price: 0,
-      currentBid: 11800000,
-      image: "https://images.unsplash.com/photo-1633512217983-49d799f243be?w=600",
-      year: 2024,
-      mileage: "1,200 km",
-      fuelType: "Hybrid",
-      location: "Islamabad, ICT",
-      timeLeft: "1h 30m",
-      isAuction: true,
-    },
-    {
-      id: "4",
-      title: "2023 MG HS Essence",
-      price: 0,
-      currentBid: 8500000,
-      image: "https://images.unsplash.com/photo-1606824967397-6a30c5112cc4?w=600",
-      year: 2023,
-      mileage: "9,400 km",
-      fuelType: "Petrol",
-      location: "Peshawar, KPK",
-      timeLeft: "6h 20m",
-      isAuction: true,
-    },
-    {
-      id: "5",
-      title: "2022 Toyota Hilux Revo Rocco",
-      price: 0,
-      currentBid: 12500000,
-      image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=600",
-      year: 2022,
-      mileage: "28,100 km",
-      fuelType: "Diesel",
-      location: "Quetta, Balochistan",
-      timeLeft: "8h 55m",
-      isAuction: true,
-    },
-    {
-      id: "6",
-      title: "2023 Suzuki Swift GLX",
-      price: 0,
-      currentBid: 4150000,
-      image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600",
-      year: 2023,
-      mileage: "4,500 km",
-      fuelType: "Petrol",
-      location: "Faisalabad, Punjab",
-      timeLeft: "3h 10m",
-      isAuction: true,
-    },
-  ];
+  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+
+  // Filter State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilters, setActiveFilters] = useState<FilterState>({
+    priceRange: [0, 50000000],
+    yearRange: [1980, 2025],
+    makes: [],
+    bodyTypes: [],
+    fuelTypes: [],
+    transmissions: [],
+    colors: [],
+    registrationCities: [],
+    locations: [],
+    engineCCRange: [600, 6000],
+  });
+
+  const fetchVehicles = useCallback(async () => {
+    try {
+      setLoading(true);
+      const limit = 12;
+      let url = `http://localhost:5000/api/cars?type=auction&page=${page}&limit=${limit}`;
+
+      // Search Query
+      if (searchQuery) {
+        url += `&search=${encodeURIComponent(searchQuery)}`;
+      }
+
+      // Makes
+      if (activeFilters.makes.length > 0) {
+        url += `&make=${activeFilters.makes.join(',')}`;
+      }
+
+      // Fuel
+      if (activeFilters.fuelTypes.length > 0) {
+        url += `&fuelType=${activeFilters.fuelTypes.join(',')}`;
+      }
+
+      // Body Type
+      if (activeFilters.bodyTypes.length > 0) {
+        url += `&bodyType=${activeFilters.bodyTypes.join(',')}`;
+      }
+
+      // Transmission
+      if (activeFilters.transmissions.length > 0) {
+        url += `&transmission=${activeFilters.transmissions.join(',')}`;
+      }
+
+      // Color
+      if (activeFilters.colors.length > 0) {
+        url += `&color=${encodeURIComponent(activeFilters.colors.join(','))}`; // encode for # or names
+      }
+
+      // Registration City
+      if (activeFilters.registrationCities.length > 0) {
+        url += `&registrationCity=${activeFilters.registrationCities.join(',')}`;
+      }
+
+      // Location
+      if (activeFilters.locations.length > 0) {
+        url += `&location=${activeFilters.locations.join(',')}`;
+      }
+
+      // Engine CC - Only send if restricted
+      if (activeFilters.engineCCRange[0] > 600 || activeFilters.engineCCRange[1] < 6000) {
+        url += `&minEngineCC=${activeFilters.engineCCRange[0]}&maxEngineCC=${activeFilters.engineCCRange[1]}`;
+      }
+      if (activeFilters.bodyTypes.length > 0) {
+        url += `&bodyType=${activeFilters.bodyTypes.join(',')}`;
+      }
+
+      // Transmission
+      if (activeFilters.transmissions.length > 0) {
+        url += `&transmission=${activeFilters.transmissions.join(',')}`;
+      }
+
+      // Color
+      if (activeFilters.colors.length > 0) {
+        url += `&color=${encodeURIComponent(activeFilters.colors.join(','))}`;
+      }
+
+      // Price Range
+      if (activeFilters.priceRange[0] > 0 || activeFilters.priceRange[1] < 50000000) {
+        url += `&minPrice=${activeFilters.priceRange[0]}&maxPrice=${activeFilters.priceRange[1]}`;
+      }
+
+      // Year Range
+      if (activeFilters.yearRange[0] > 1980 || activeFilters.yearRange[1] < 2025) {
+        url += `&minYear=${activeFilters.yearRange[0]}&maxYear=${activeFilters.yearRange[1]}`;
+      }
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const mapped = data.cars.map((car: any) => ({
+        id: car._id,
+        title: car.title,
+        price: car.price,
+        currentBid: car.price, // Assuming price is current bid for auctions
+        image: car.image,
+        year: car.year || parseInt(car.title.match(/\d{4}/)?.[0] || "2020"),
+        mileage: car.mileage || "N/A",
+        fuelType: car.fuelType || car.features?.find((f: string) => ["Petrol", "Diesel", "Hybrid", "Electric"].includes(f)) || "Petrol",
+        location: car.location,
+        make: car.make || car.title.split(' ')[1] || 'Unknown',
+        isAuction: true,
+        timeLeft: "24h" // Placeholder as DB doesn't have end time yet
+      }));
+
+      if (page === 1) {
+        setVehicles(mapped);
+      } else {
+        setVehicles(prev => [...prev, ...mapped]);
+      }
+      setTotal(data.totalCars);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, searchQuery, activeFilters]);
+
+  useEffect(() => {
+    fetchVehicles();
+  }, [fetchVehicles]);
+
+  const handleApplyFilters = (filters: FilterState) => {
+    setActiveFilters(filters);
+    setPage(1);
+    setIsFilterOpen(false);
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setPage(1);
+  };
 
   const tabs = [
-    { id: "live", label: "Live Auctions", icon: Flame, count: 24 },
-    { id: "upcoming", label: "Upcoming", icon: Clock, count: 18 },
-    { id: "ending", label: "Ending Soon", icon: TrendingUp, count: 8 },
+    { id: "live", label: "Live Auctions", icon: Flame, count: total },
+    { id: "upcoming", label: "Upcoming", icon: Clock, count: 0 },
+    { id: "ending", label: "Ending Soon", icon: TrendingUp, count: 0 },
   ];
 
   return (
@@ -127,12 +186,12 @@ const Auctions = () => {
           </p>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats Cards - Static for now or can calculate from data */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Active Auctions", value: "156", color: "bg-primary/10 text-primary" },
-            { label: "Total Bids Today", value: "2,847", color: "bg-accent-gold/10 text-accent-gold" },
-            { label: "Ending Soon", value: "12", color: "bg-accent-racing/10 text-accent-racing" },
+            { label: "Active Auctions", value: total.toString(), color: "bg-primary/10 text-primary" },
+            { label: "Total Bids Today", value: "0", color: "bg-accent-gold/10 text-accent-gold" }, // Placeholder
+            { label: "Ending Soon", value: "0", color: "bg-accent-racing/10 text-accent-racing" },
             { label: "Avg. Savings", value: "18%", color: "bg-green-500/10 text-green-600" },
           ].map((stat, index) => (
             <div
@@ -155,8 +214,8 @@ const Auctions = () => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
               className={`flex items-center gap-2 px-5 py-3 rounded-xl font-medium whitespace-nowrap transition-all duration-300 ${activeTab === tab.id
-                  ? "bg-primary text-primary-foreground shadow-premium"
-                  : "bg-card border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/50"
+                ? "bg-primary text-primary-foreground shadow-premium"
+                : "bg-card border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/50"
                 }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -179,6 +238,8 @@ const Auctions = () => {
               <Input
                 placeholder="Search auctions..."
                 className="pl-12 h-12 rounded-xl border-border/50 focus:border-primary"
+                value={searchQuery}
+                onChange={handleSearch}
               />
             </div>
 
@@ -199,8 +260,8 @@ const Auctions = () => {
               <button
                 onClick={() => setViewMode("grid")}
                 className={`p-2.5 rounded-lg transition-all ${viewMode === "grid"
-                    ? "bg-primary text-primary-foreground shadow-premium"
-                    : "text-muted-foreground hover:text-foreground"
+                  ? "bg-primary text-primary-foreground shadow-premium"
+                  : "text-muted-foreground hover:text-foreground"
                   }`}
               >
                 <Grid3X3 className="w-5 h-5" />
@@ -208,8 +269,8 @@ const Auctions = () => {
               <button
                 onClick={() => setViewMode("list")}
                 className={`p-2.5 rounded-lg transition-all ${viewMode === "list"
-                    ? "bg-primary text-primary-foreground shadow-premium"
-                    : "text-muted-foreground hover:text-foreground"
+                  ? "bg-primary text-primary-foreground shadow-premium"
+                  : "text-muted-foreground hover:text-foreground"
                   }`}
               >
                 <List className="w-5 h-5" />
@@ -231,7 +292,7 @@ const Auctions = () => {
         <div className="flex gap-8">
           <aside className="hidden lg:block w-72 flex-shrink-0">
             <div className="sticky top-28">
-              <FilterSidebar />
+              <FilterSidebar onApply={handleApplyFilters} />
             </div>
           </aside>
 
@@ -242,7 +303,7 @@ const Auctions = () => {
                 onClick={() => setIsFilterOpen(false)}
               />
               <div className="absolute right-0 top-0 bottom-0 w-80 max-w-full overflow-y-auto animate-slide-in-right">
-                <FilterSidebar isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} />
+                <FilterSidebar isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} onApply={handleApplyFilters} />
               </div>
             </div>
           )}
@@ -250,30 +311,34 @@ const Auctions = () => {
           <div className="flex-1">
             <div className="flex items-center justify-between mb-6">
               <p className="text-muted-foreground">
-                Showing <span className="font-semibold text-foreground">{liveAuctions.length}</span> auctions
+                Showing <span className="font-semibold text-foreground">{vehicles.length}</span> auctions
               </p>
             </div>
 
             <div
               className={`grid gap-6 ${viewMode === "grid"
-                  ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
-                  : "grid-cols-1"
+                ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+                : "grid-cols-1"
                 }`}
             >
-              {liveAuctions.map((vehicle, index) => (
+              {vehicles.map((vehicle, index) => (
                 <VehicleCard key={vehicle.id} {...vehicle} delay={index * 100} />
               ))}
             </div>
 
-            <div className="mt-12 text-center">
-              <Button
-                variant="outline"
-                size="lg"
-                className="rounded-xl px-8 font-semibold hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300"
-              >
-                Load More Auctions
-              </Button>
-            </div>
+            {vehicles.length < total && (
+              <div className="mt-12 text-center">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setPage(p => p + 1)}
+                  disabled={loading}
+                  className="rounded-xl px-8 font-semibold hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300"
+                >
+                  {loading ? "Loading..." : "Load More Auctions"}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </main>

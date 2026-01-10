@@ -1,7 +1,8 @@
 import { Heart, MapPin, Fuel, Gauge, Calendar } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface VehicleCardProps {
   id: string;
@@ -33,6 +34,55 @@ const VehicleCard = ({
   delay = 0,
 }: VehicleCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if this car is in user's favorites
+    const checkFavorite = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const res = await fetch('http://localhost:5000/api/auth/favorites', {
+          headers: { 'x-auth-token': token }
+        });
+        const favorites = await res.json();
+        if (Array.isArray(favorites) && favorites.some((fav: any) => fav === id || fav._id === id)) {
+          setIsFavorite(true);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    checkFavorite();
+  }, [id]);
+
+  const toggleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      if (confirm("You must be logged in to save cars. Proceed to login?")) {
+        navigate('/login');
+      }
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/auth/favorites/${id}`, {
+        method: 'POST',
+        headers: { 'x-auth-token': token }
+      });
+      if (res.ok) {
+        setIsFavorite(!isFavorite);
+      } else {
+        const txt = await res.text();
+        console.error("Failed to toggle favorite:", txt);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div
@@ -66,10 +116,7 @@ const VehicleCard = ({
         </div>
         {/* Favorite Button */}
         <button
-          onClick={(e) => {
-            e.preventDefault();
-            setIsFavorite(!isFavorite);
-          }}
+          onClick={toggleFavorite}
           className="absolute top-3 right-3 p-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full shadow-lg transition-all duration-300 hover:bg-white hover:scale-110 active:scale-95"
         >
           <Heart
@@ -133,12 +180,14 @@ const VehicleCard = ({
               </div>
             )}
           </div>
-          <Button
-            size="sm"
-            className="rounded-xl px-5 font-semibold bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300"
-          >
-            {isAuction ? "Bid Now" : "View Details"}
-          </Button>
+          <Link to={`/vehicles/${id}`}>
+            <Button
+              size="sm"
+              className="rounded-xl px-5 font-semibold bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300"
+            >
+              {isAuction ? "Bid Now" : "View Details"}
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
