@@ -16,88 +16,96 @@ router.get('/', async (req, res) => {
         // Status filter
         if (req.query.status) query.status = req.query.status;
 
+        const filters = [];
+
         // Search filter (general keyword)
         if (req.query.search) {
-            query.$or = [
-                { title: { $regex: req.query.search, $options: 'i' } },
-                { description: { $regex: req.query.search, $options: 'i' } },
-                { make: { $regex: req.query.search, $options: 'i' } },
-                { model: { $regex: req.query.search, $options: 'i' } }
-            ];
+            filters.push({
+                $or: [
+                    { title: { $regex: req.query.search, $options: 'i' } },
+                    { description: { $regex: req.query.search, $options: 'i' } },
+                    { make: { $regex: req.query.search, $options: 'i' } },
+                    { model: { $regex: req.query.search, $options: 'i' } }
+                ]
+            });
         }
 
         // Make filter
         if (req.query.make) {
             const makes = req.query.make.split(',');
-            query.make = { $in: makes.map(m => new RegExp(`^${m}$`, 'i')) };
+            filters.push({ make: { $in: makes.map(m => new RegExp(m, 'i')) } });
         }
 
         // Body Type filter
         if (req.query.bodyType) {
             const types = req.query.bodyType.split(',');
-            query.bodyType = { $in: types.map(t => new RegExp(`^${t}$`, 'i')) };
+            filters.push({ bodyType: { $in: types.map(t => new RegExp(t, 'i')) } });
         }
 
         // Fuel Type filter
         if (req.query.fuelType) {
             const fuels = req.query.fuelType.split(',');
-            query.fuelType = { $in: fuels.map(f => new RegExp(`^${f}$`, 'i')) };
+            filters.push({ fuelType: { $in: fuels.map(f => new RegExp(f, 'i')) } });
         }
 
         // Transmission filter
         if (req.query.transmission) {
             const transmissions = req.query.transmission.split(',');
-            query.transmission = { $in: transmissions.map(t => new RegExp(`^${t}$`, 'i')) };
+            filters.push({ transmission: { $in: transmissions.map(t => new RegExp(t, 'i')) } });
         }
 
-        // Color filter (checks color or exteriorColor)
+        // Color filter
         if (req.query.color) {
             const colors = req.query.color.split(',');
-            const colorRegex = colors.map(c => new RegExp(c, 'i')); // looser match for color
-            query.$or = [
-                { color: { $in: colorRegex } },
-                { exteriorColor: { $in: colorRegex } }
-            ];
-            // Merging with existing $or if search is present is tricky.
-            // If search is present, we have an existing $or. We need to use $and to combine them.
-            if (req.query.search) {
-                // Keep the search $or
-                const searchOr = query.$or;
-                delete query.$or; // remove it to construct $and
-                query.$and = [
-                    { $or: searchOr },
-                    {
-                        $or: [
-                            { color: { $in: colorRegex } },
-                            { exteriorColor: { $in: colorRegex } }
-                        ]
-                    }
-                ];
-            } else {
-                query.$or = [
+            const colorRegex = colors.map(c => new RegExp(c, 'i'));
+            filters.push({
+                $or: [
                     { color: { $in: colorRegex } },
                     { exteriorColor: { $in: colorRegex } }
-                ];
-            }
+                ]
+            });
         }
 
         // Registration City
         if (req.query.registrationCity) {
             const cities = req.query.registrationCity.split(',');
-            query.registrationCity = { $in: cities.map(c => new RegExp(`^${c}$`, 'i')) };
+            filters.push({ registrationCity: { $in: cities.map(c => new RegExp(c, 'i')) } });
         }
 
-        // Location - Use 'contains' match instead of exact
+        // Location
         if (req.query.location) {
             const locations = req.query.location.split(',');
-            query.location = { $in: locations.map(l => new RegExp(l, 'i')) };
+            filters.push({ location: { $in: locations.map(l => new RegExp(l, 'i')) } });
+        }
+
+        // Price Range filter
+        if (req.query.minPrice || req.query.maxPrice) {
+            const priceQuery = {};
+            if (req.query.minPrice) priceQuery.$gte = parseInt(req.query.minPrice);
+            if (req.query.maxPrice) priceQuery.$lte = parseInt(req.query.maxPrice);
+            filters.push({ price: priceQuery });
+        }
+
+        // Year Range filter
+        if (req.query.minYear || req.query.maxYear) {
+            const yearQuery = {};
+            if (req.query.minYear) yearQuery.$gte = parseInt(req.query.minYear);
+            if (req.query.maxYear) yearQuery.$lte = parseInt(req.query.maxYear);
+            filters.push({ year: yearQuery });
+        }
+
+        // User filter
+        if (req.query.user) {
+            filters.push({ user: req.query.user });
+        }
+
+        // Type filter
+        if (req.query.type) {
+            filters.push({ type: req.query.type });
         }
 
         // Engine CC Range
         if (req.query.minEngineCC || req.query.maxEngineCC) {
-            let expr = { $and: [] };
-
-            // Extract the first sequence of digits from engineDisplacement string "1300 cc" -> "1300"
             const extractCC = {
                 $toInt: {
                     $getField: {
@@ -107,42 +115,42 @@ router.get('/', async (req, res) => {
                 }
             };
 
+            const ccFilters = [];
             if (req.query.minEngineCC) {
-                expr.$and.push({ $gte: [extractCC, parseInt(req.query.minEngineCC)] });
+                ccFilters.push({ $gte: [extractCC, parseInt(req.query.minEngineCC)] });
             }
             if (req.query.maxEngineCC) {
-                expr.$and.push({ $lte: [extractCC, parseInt(req.query.maxEngineCC)] });
+                ccFilters.push({ $lte: [extractCC, parseInt(req.query.maxEngineCC)] });
             }
 
-            if (expr.$and.length > 0) {
-                query.$expr = expr;
+            if (ccFilters.length > 0) {
+                filters.push({ $expr: { $and: ccFilters } });
             }
         }
 
-        // Price Range filter
-        if (req.query.minPrice || req.query.maxPrice) {
-            query.price = {};
-            if (req.query.minPrice) query.price.$gte = parseInt(req.query.minPrice);
-            if (req.query.maxPrice) query.price.$lte = parseInt(req.query.maxPrice);
+        // Combine all filters using $and for maximum reliability
+        if (filters.length > 0) {
+            if (query.$or) {
+                // If there's an existing top-level $or (from search maybe), combine it
+                filters.push({ $or: query.$or });
+                delete query.$or;
+            }
+            query.$and = filters;
         }
 
-        // Year Range filter
-        if (req.query.minYear || req.query.maxYear) {
-            query.year = {};
-            if (req.query.minYear) query.year.$gte = parseInt(req.query.minYear);
-            if (req.query.maxYear) query.year.$lte = parseInt(req.query.maxYear);
+        // Randomization
+        if (req.query.random === 'true' && !req.query.search && !req.query.make && !req.query.model) {
+            const randomCars = await Car.aggregate([
+                { $match: query },
+                { $sample: { size: limit } }
+            ]);
+            return res.json({
+                cars: randomCars,
+                currentPage: page,
+                totalPages: 1, // Aggregation sample doesn't easily support total count for pagination
+                totalCars: limit
+            });
         }
-
-        // User filter (for Inventory)
-        if (req.query.user) {
-            query.user = req.query.user;
-        }
-
-        // Type filter (for Auctions vs Buy Now)
-        if (req.query.type) {
-            query.type = req.query.type;
-        }
-
 
         const cars = await Car.find(query).skip(skip).limit(limit);
         const total = await Car.countDocuments(query);
@@ -153,6 +161,7 @@ router.get('/', async (req, res) => {
             totalPages: Math.ceil(total / limit),
             totalCars: total
         });
+
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

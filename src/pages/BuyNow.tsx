@@ -43,7 +43,7 @@ const BuyNow = () => {
     try {
       setLoading(true);
       const limit = 12;
-      let url = `http://localhost:5000/api/cars?page=${page}&limit=${limit}`;
+      let url = `http://localhost:5000/api/cars?type=buy-now&random=true&page=${page}&limit=${limit}`;
 
       // Search Query
       if (searchQuery) {

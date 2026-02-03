@@ -18,8 +18,8 @@ const App = () => (
   <TooltipProvider>
     <Toaster />
     <Sonner />
-    <ChatBot />
     <BrowserRouter>
+      <ChatBot />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />

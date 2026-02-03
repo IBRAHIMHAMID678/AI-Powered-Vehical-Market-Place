@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# AI Models & Temp Files
+*.bin
+server/ggml-small.bin
+server/temp_stt_repo/
+server/uploads/*
+!server/uploads/.gitkeep
+services/__pycache__/
+__pycache__/

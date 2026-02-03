@@ -32,50 +32,10 @@ import {
   Edit,
   Trash2,
   Car,
-  Banknote,
-  TrendingUp,
-  Package,
-  ArrowUpRight,
-  ArrowDownRight,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Inventory = () => {
-  const stats = [
-    {
-      label: "Total Listings",
-      value: "24",
-      change: "+3",
-      isPositive: true,
-      icon: Car,
-      color: "bg-primary/10 text-primary",
-    },
-    {
-      label: "Active Auctions",
-      value: "8",
-      change: "+2",
-      isPositive: true,
-      icon: TrendingUp,
-      color: "bg-accent-gold/10 text-accent-gold",
-    },
-    {
-      label: "Total Value",
-      value: "PKR 842,500",
-      change: "+12%",
-      isPositive: true,
-      icon: Banknote,
-      color: "bg-green-500/10 text-green-600",
-    },
-    {
-      label: "Pending Sales",
-      value: "5",
-      change: "-1",
-      isPositive: false,
-      icon: Package,
-      color: "bg-accent-racing/10 text-accent-racing",
-    },
-  ];
-
   const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -96,7 +56,6 @@ const Inventory = () => {
       const userId = user.id || user._id;
 
       if (activeTab === 'listings') {
-        // Fetch My Listings
         let url = `http://localhost:5000/api/cars?page=${page}&limit=10`;
         if (userId) {
           url += `&user=${userId}`;
@@ -107,7 +66,6 @@ const Inventory = () => {
         setTotalPages(data.totalPages);
         setTotalListings(data.totalCars);
       } else {
-        // Fetch Liked Cars
         if (!token) {
           setListings([]);
           setTotalListings(0);
@@ -115,19 +73,10 @@ const Inventory = () => {
           return;
         }
 
-        // Get favorite IDs
         const favRes = await fetch('http://localhost:5000/api/auth/favorites', {
           headers: { 'x-auth-token': token }
         });
-        const favData = await favRes.json(); // This is an array of populated car objects (or IDs if not populated)
-
-        // If populated, we can use directly. My auth route populates 'savedCars'.
-        // However, the structure might be different from /api/cars response. 
-        // Let's assume populate returns full car objects.
-
-        // Since pagination on favorites isn't implemented in the simple auth route yet, we'll mimic it or just show all.
-        // For now, let's show all favorites (client-side pagination if needed, but keeping it simple).
-
+        const favData = await favRes.json();
         setListings(favData);
         setTotalPages(1);
         setTotalListings(favData.length);
@@ -160,7 +109,6 @@ const Inventory = () => {
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 animate-fade-in">
           <div>
             <h1 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-2">
@@ -192,37 +140,6 @@ const Inventory = () => {
           </Button>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat, index) => (
-            <div
-              key={stat.label}
-              className="bg-card rounded-2xl border border-border/50 p-5 shadow-premium animate-fade-in hover:shadow-premium-lg transition-all"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${stat.color}`}>
-                  <stat.icon className="w-5 h-5" />
-                </div>
-                <div
-                  className={`flex items-center gap-1 text-sm font-medium ${stat.isPositive ? "text-green-600" : "text-accent-racing"
-                    }`}
-                >
-                  {stat.isPositive ? (
-                    <ArrowUpRight className="w-4 h-4" />
-                  ) : (
-                    <ArrowDownRight className="w-4 h-4" />
-                  )}
-                  {stat.change}
-                </div>
-              </div>
-              <p className="font-heading text-2xl font-bold text-foreground">{stat.value}</p>
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Filters & Search */}
         <div className="bg-card rounded-2xl border border-border/50 p-4 mb-6 shadow-premium animate-fade-in">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
@@ -257,7 +174,6 @@ const Inventory = () => {
           </div>
         </div>
 
-        {/* Listings Table */}
         <div className="bg-card rounded-2xl border border-border/50 shadow-premium overflow-hidden animate-fade-in">
           <Table>
             <TableHeader>
@@ -311,10 +227,10 @@ const Inventory = () => {
                   </TableCell>
                   <TableCell>{getStatusBadge(listing.status)}</TableCell>
                   <TableCell className="hidden md:table-cell">
-                    <span className="text-muted-foreground">{listing.views.toLocaleString()}</span>
+                    <span className="text-muted-foreground">{listing.views?.toLocaleString() || 0}</span>
                   </TableCell>
                   <TableCell className="hidden lg:table-cell">
-                    <span className="text-muted-foreground">{listing.inquiries}</span>
+                    <span className="text-muted-foreground">{listing.inquiries || 0}</span>
                   </TableCell>
                   <TableCell className="hidden lg:table-cell">
                     <span className="text-muted-foreground">
@@ -353,7 +269,6 @@ const Inventory = () => {
             </TableBody>
           </Table>
 
-          {/* Empty State */}
           {listings.length === 0 && (
             <div className="text-center py-16">
               <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -373,7 +288,6 @@ const Inventory = () => {
           )}
         </div>
 
-        {/* Pagination */}
         <div className="flex items-center justify-between mt-6">
           <p className="text-sm text-muted-foreground">
             Showing <span className="font-medium text-foreground">{(page - 1) * 10 + 1}-{Math.min(page * 10, totalListings)}</span> of{" "}

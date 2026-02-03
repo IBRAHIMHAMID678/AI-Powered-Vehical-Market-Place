@@ -15,7 +15,7 @@ const Index = () => {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/cars?limit=6"); // Fetch 6 random/latest cars
+        const res = await fetch("http://localhost:5000/api/cars?random=true&limit=6"); // Fetch 6 random cars
         const data = await res.json();
         if (data.cars) {
           const mapped = data.cars.map((car: any) => ({
@@ -211,27 +211,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Stats Section */}
-        <section className="mt-20 py-12 border-t border-border">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center animate-fade-in" style={{ animationDelay: "0ms" }}>
-              <p className="font-heading text-3xl md:text-4xl font-bold text-primary">15K+</p>
-              <p className="text-sm text-muted-foreground mt-1">Active Listings</p>
-            </div>
-            <div className="text-center animate-fade-in" style={{ animationDelay: "100ms" }}>
-              <p className="font-heading text-3xl md:text-4xl font-bold text-primary">8K+</p>
-              <p className="text-sm text-muted-foreground mt-1">Happy Customers</p>
-            </div>
-            <div className="text-center animate-fade-in" style={{ animationDelay: "200ms" }}>
-              <p className="font-heading text-3xl md:text-4xl font-bold text-primary">500+</p>
-              <p className="text-sm text-muted-foreground mt-1">Verified Dealers</p>
-            </div>
-            <div className="text-center animate-fade-in" style={{ animationDelay: "300ms" }}>
-              <p className="font-heading text-3xl md:text-4xl font-bold text-primary">98%</p>
-              <p className="text-sm text-muted-foreground mt-1">Satisfaction Rate</p>
-            </div>
-          </div>
-        </section>
       </main>
     </div>
   );

@@ -3,6 +3,15 @@
 @tailwind utilities;
 
 @layer base {
+  @font-face {
+    font-family: 'Jameel Noori Nastaleeq';
+    src: url('/fonts/JameelNoori.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+}
+
+@layer base {
   :root {
     --background: 220 14% 96%;
     /* Slightly darker, cooler light mode */
@@ -242,5 +251,12 @@
 @layer utilities {
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent-racing;
+  }
+
+  .urdu-text {
+    font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+    line-height: 2.4;
+    font-size: 1.5rem;
+    padding-bottom: 5px;
   }
 }

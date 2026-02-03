@@ -43,7 +43,7 @@ const Auctions = () => {
     try {
       setLoading(true);
       const limit = 12;
-      let url = `http://localhost:5000/api/cars?type=auction&page=${page}&limit=${limit}`;
+      let url = `http://localhost:5000/api/cars?type=auction&random=true&page=${page}&limit=${limit}`;
 
       // Search Query
       if (searchQuery) {
@@ -186,26 +186,6 @@ const Auctions = () => {
           </p>
         </div>
 
-        {/* Stats Cards - Static for now or can calculate from data */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: "Active Auctions", value: total.toString(), color: "bg-primary/10 text-primary" },
-            { label: "Total Bids Today", value: "0", color: "bg-accent-gold/10 text-accent-gold" }, // Placeholder
-            { label: "Ending Soon", value: "0", color: "bg-accent-racing/10 text-accent-racing" },
-            { label: "Avg. Savings", value: "18%", color: "bg-green-500/10 text-green-600" },
-          ].map((stat, index) => (
-            <div
-              key={stat.label}
-              className="bg-card rounded-2xl border border-border/50 p-5 shadow-premium animate-fade-in"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-              <p className={`font-heading text-2xl font-bold ${stat.color.split(" ")[1]}`}>
-                {stat.value}
-              </p>
-            </div>
-          ))}
-        </div>
 
         {/* Tabs */}
         <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2">
